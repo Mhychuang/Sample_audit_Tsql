@@ -1,0 +1,37 @@
+{
+  "name": "county-drop-down",
+  "version": "1.0.0",
+  "keywords": [],
+  "main": "src/index.js",
+  "dependencies": {
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.11.2",
+    "axios": "0.21.1",
+    "formik": "2.2.9",
+    "material-table": "^1.69.3",
+    "react": "16.13.1",
+    "react-bootstrap": "1.6.1",
+    "react-dom": "16.13.1",
+    "react-material-ui-form-validator": "^2.1.4",
+    "react-scripts": "3.4.3",
+    "react-select": "4.3.1"
+  },
+  "devDependencies": {
+    "typescript": "3.8.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
