@@ -82,23 +82,23 @@ const App = () => {
   });
 
 
-  const emptySampleCandidate = {
-    SampleId: "",
-    CountyId: "",
-    CandidateName1: "",
-    CandidateName2: "",
-    //to update
-    Machine1: "",
-    HandToEye1: "",
-    DifferenceInCount1: "",
-    Machine2: "",
-    HandToEye2: "",
-    DifferenceInCount2: ""
-  }
+  // const emptySampleCandidate = {
+  //   SampleId: "",
+  //   CountyId: "",
+  //   CandidateName1: "",
+  //   CandidateName2: "",
+  //   //to update
+  //   Machine1: "",
+  //   HandToEye1: "",
+  //   DifferenceInCount1: "",
+  //   Machine2: "",
+  //   HandToEye2: "",
+  //   DifferenceInCount2: ""
+  // }
 
-  const [sampleCandidate, setSampleCandidate] = React.useState({
-    ...emptySampleDetail
-  });
+  // const [sampleCandidate, setSampleCandidate] = React.useState({
+  //   ...emptySampleDetail
+  // });
 
   const [selectedSampleId, setSelectedSampleId] = useState('');
 
@@ -169,33 +169,35 @@ const App = () => {
     console.log("data", data);
   };
 
-  const getCandidateByCountyandsample = async (countyId, sampleId) => {
-    const response = await axios.get(
-      `http://localhost:4000/getCandidateByCountySampleId/${countyId}/${sampleId}`
-    );
-    let data = await response.data;
-    setCandidateData(data);
 
-    console.log("candidate", data);
+
+
+  const getCandidateByCountyandsample = async (countyId, sampleId) => {
+      try{
+        const response = await axios.get(`http://localhost:4000/getCandidateByCountySampleId/${countyId}/${sampleId}`);
+        let data = await response.data;
+        setCandidateData(data);
+      }catch (error){
+        console.error(error)
+      }  
   };
 
 
   const updateCandidate = async (newData, canId, putbody) => {
     const res = await axios.put(`http://localhost:4000/updateCandidate/${canId}`, putbody);
-
-    console.log('put response', res)
-    console.log('candidate Data', candidateData)
     let updateDate = candidateData
     let objIndex = updateDate.findIndex((obj => obj.CandidateId == newData.CandidateId));
-    updateDate[objIndex].Machine = newData.Machine
-    updateDate[objIndex].HandToEye = newData.HandToEye
-    updateDate[objIndex].DifferenceInCount = newData.DifferenceInCount
+    updateDate[objIndex].Machine = parseInt(newData.Machine)
+    updateDate[objIndex].HandToEye = parseInt(newData.HandToEye)
+    updateDate[objIndex].DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
     setCandidateData(updateDate)
+    return ('success!' )
   }
 
   const updateSample = async (CountyId, SampleID, putbody) => {
     console.log('updatFunction', putbody);
     const res = await axios.put(`http://localhost:4000//updateSample/${CountyId}/${SampleID}`, putbody);
+    console.log('', res)
   }
 
 
@@ -220,13 +222,14 @@ const App = () => {
   };
 
   const handleSubmit = (e) => {
-
+    console.log(e);
+  
     setFormInfo({ submitted: true }, () => {
-      setTimeout(() => setFormInfo({ submitted: false }), 500);
+      setTimeout(() => setFormInfo({ submitted: false }), 500)});
 
 
-    });
     console.log('Final_sampleDetail', sampleDetail.CountyId)
+
     updateSample(sampleDetail.CountyId, sampleDetail.SampleID, sampleDetail)
   }
 
@@ -247,7 +250,7 @@ const App = () => {
       //validate: rowData => rowData.year === undefined || rowData.year === "" ? "Required" : true
     },
     {
-      title: "Difference In Count", field: 'DifferenceInCount',
+      title: "Difference In Count", field: 'DifferenceInCount', editable: 'never',
       //validate: rowData => rowData.fee === undefined || rowData.fee === "" ? "Required" : true
     }]
 
@@ -303,6 +306,7 @@ const App = () => {
   }
 
   const handleCostInput = (e) => {
+    console.log('costhandle', e.target.value)
     setSampleDetail({
       ...sampleDetail,
       CostOfCount: e.target.value
@@ -338,12 +342,14 @@ const App = () => {
 
 
   React.useEffect(() => {
-    console.log('all', sampleDetail)
-    console.log('Time', sampleDetail.TimeOfCount.toString())
-  }, [sampleDetail]);
+    console.log('candidate', candidateData)
+    console.log('sampleDetail', sampleDetail)
+
+  }, [candidateData, sampleDetail]);
 
 
-  //for select
+
+  //Style
   const useStyles = makeStyles((theme) => ({
     formControl: {
       margin: theme.spacing(1),
@@ -357,26 +363,54 @@ const App = () => {
       borderBottom: "1px solid grey",
       borderLeft: "1px solid grey"
     },
+    bigTitle: {
+      textAlign: "center",
+      fontSize: 30,
+      color: "blue",
+      fontWeight: 800,
+      margin: 5,
+      padding: 5,
+    },
     title: {
       textAlign: "center",
       fontSize: 15,
       color: "blue",
       fontWeight: 600,
       margin: 0,
+      marginBottom: 5,
       padding: 0,
     },
     textBox: {
+      paddingTop: 6,
       '& .MuiTextField-root': {
-        margin: theme.spacing(1),
+        margin: theme.spacing(0),
         width: '100%',
       },
+
+    },
+    formBox: {
+      border: "1px solid grey",
+      // margin: 20
       
     },
-    formBox:{
-      border: "1px solid grey"
-    },
     entireForm: {
-      padding: 20
+      paddingTop: 30,
+      paddingLeft: '10%',
+      paddingRight: '10%',
+      paddingBottom: 50,
+    },
+    VotingEquipmentUsed: {
+      paddingLeft: 15
+
+    },
+    cost: {
+      padding: 15,
+
+
+    },
+    costInput: {
+      paddingLeft: 30
+
     }
   }));
 
@@ -447,55 +481,55 @@ const App = () => {
 
       <Grid container spacing={1} justifyContent='center'>
 
-        <Grid item md={2}>
+        <Grid item xs={3} md={3}>
           <Cards cardName={'Election Date'} CardValue={sampleDetail.ElectionDate.toString().substring(0, 10)} />
         </Grid>
-        <Grid item md={2}>
+        <Grid item md={3}>
           <Cards cardName={'Contest Name'} CardValue={sampleDetail.ContestName} />
         </Grid>
-        <Grid item md={2}>
+        <Grid item md={3}>
           <Cards cardName={'Type Of Sample'} CardValue={sampleDetail.TypeOfSample} />
         </Grid>
-        <Grid item md={2}>
+        <Grid item md={3}>
           <Cards cardName={'Precinct Site Name'} CardValue={sampleDetail.PrecinctSiteName} />
         </Grid>
       </Grid>
 
 
-      <Grid container spacing={1} justifyContent='center'>
-              <Grid item xs ={12}>
-        <SimplePaper></SimplePaper>
+      <Grid container spacing={10} justifyContent='center'>
+        <Grid item xs={12} spacing={10}>
+          <SimplePaper></SimplePaper>
         </Grid>
       </Grid>
 
       {/* form starts here */}
-      <Grid container spacing={2} justifyContent='center'  className = {classes.formBox}>
+      <Grid container spacing={3} justifyContent='center' className={classes.formBox}>
 
-        <Grid item xs={12} className = {classes.title}>
-          Title
+        <Grid item xs={12} className={classes.bigTitle}>
+          Sample Audit Form
         </Grid>
+
         <Grid container item xs={12}>
 
 
-          <Grid item xs={6} style={{ borderRight: "1px solid grey" }}>
-            <Typography className={classes.title}>Select data and time</Typography>
+          <Grid item xs={6} style={{ border: "1px solid grey" }}>
+            <Typography className={classes.title}>Select date and time</Typography>
             <DatePickers onDateChange={handleDateChange} onTimeChange={handleTimeChange}
               selectedDate={sampleDetail.DateOfCount} selectedTime={sampleDetail.TimeOfCount} />
           </Grid>
 
-          <Grid item xs={6} >
+          <Grid item xs={6} className={classes.VotingEquipmentUsed} style={{ border: "1px solid grey" }}>
             <Typography className={classes.title}>Voting equipment used for this sample</Typography>
             <CheckboxLabels onCheckBoxChange={handleCheckbox} list={sampleDetail.VotingEquipmentUsed}>
             </CheckboxLabels>
           </Grid>
 
-          <Grid container item xs={6}   >
+          <Grid container item xs={6} style={{ border: "1px solid grey" }} className={classes.cost} >
             <Grid item>
               <Typography className={classes.title}>Time necessary to complete this count (not BOTH counts)</Typography>
             </Grid>
 
-
-            <Grid item spacing={0} direction="column" alignItems="center" justify="center">
+            <Grid item className={classes.costInput}>
               <TextField
                 InputProps={{
                   startAdornment: <InputAdornment position="start">Hr</InputAdornment>,
@@ -511,16 +545,16 @@ const App = () => {
             </Grid>
           </Grid>
 
-          <Grid container item xs={6} >
+          <Grid container item xs={6} style={{ border: "1px solid grey" }} className={classes.cost} >
             <Grid item>
               <Typography className={classes.title}>Cost or estimated cost of this count (not BOTH counts)</Typography>
             </Grid>
 
-            <Grid item spacing={0} direction="column" alignItems="center" justify="center">
+            <Grid item className={classes.costInput}  >
               <TextField
                 InputProps={{
                   startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                  inputProps: { min: 0, max: 30 },
+                  inputProps: { min: 0, max: 99999 },
                 }}
                 //required
                 type="number"
@@ -534,14 +568,11 @@ const App = () => {
         </Grid>
 
         <Grid item xs={12}>
+
           <MaterialTable
             title="Please edit counts detail"
             columns={columns}
             data={candidateData}
-            // data = {[
-            //   {"CandidateName":"Alamance1","Machine":190,"HandToEye":0,"DifferenceInCount":0},
-            //   {"CandidateName":"Alamance2","Machine":168,"HandToEye":0,"DifferenceInCount":0},
-            // ]}
             icons={tableIcons}
             options={{
               search: false,
@@ -554,16 +585,21 @@ const App = () => {
                 //Backend call
                 let canId = oldData.CandidateId
                 //let putbody = JSON.stringify(newData)
+
+                let DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
+
                 let putbody = {
                   "CandidateId": newData.CandidateId,
                   "Machine": newData.Machine,
                   "HandToEye": newData.HandToEye,
-                  "DifferenceInCount": newData.DifferenceInCount
+                  "DifferenceInCount": DifferenceInCount
                 }
                 //Promise.then() takes two arguments, a callback for success and another for failure.
                 //Both are optional, so you can add a callback for success or failure only.
                 // here response can be any word 
-                updateCandidate(newData, canId, putbody).then(response => { resolve() });
+                updateCandidate(newData, canId, putbody).then(response => { 
+                  console.log(response)
+                  resolve() });
 
                 // axios.put(`http://localhost:4000/updateCandidate/${canId}`, putbody)
                 // .then((response, rejct) => {
@@ -577,7 +613,9 @@ const App = () => {
                 // resolve()
 
                 // });
-                // //why resolve here. will not wait for axios
+                // //why resolve here. will not wait for axios and we since it is a promise we need to excute the resolce. 
+                // or we can do somthing like resolve('done') but we don't know what material table is going to do with this resolve. 
+                
                 // //resolve()
               }),
             }}
@@ -585,21 +623,28 @@ const App = () => {
         </Grid>
 
 
-        <Grid container item xs={12}  justifyContent='center'>
-          <Grid item xs={12}>
+        <Grid container item xs={12} justifyContent='center'>
+          <Grid item xs={12} className={classes.title}>
             <Typography>Explanation of any difference (skip this section if there was no difference in any totals)</Typography>
           </Grid>
 
-          <Grid item xs={12}>
-            <RadioGroup aria-label="anonymous" name="gender1" row style={{ border: "1px solid grey" }} onChange={handleRadio}>
-              If there is a difference, is it attributable to machine error or human error?
-              <FormControlLabel value="Machine" control={<Radio />} label="Machine error" />
-              <FormControlLabel value="Human" control={<Radio />} label="Human error" />
-            </RadioGroup>
+
+          <Grid item xs={12} style={{ border: "1px solid grey" }}>
+            <Grid item xs={6} className={classes.title}>
+              <Typography>If there is a difference, is it attributable to machine error or human error?</Typography>
+            </Grid>
+
+            <Grid item xs={6}>
+              <RadioGroup row onChange={handleRadio}>
+
+                <FormControlLabel value="Machine" control={<Radio />} label="Machine error" />
+                <FormControlLabel value="Human" control={<Radio />} label="Human error" />
+              </RadioGroup>
+            </Grid>
           </Grid>
 
-          <Grid item xs={12}>
-            <form className={classes.textBox} noValidate autoComplete="off">
+          <Grid item xs={12} className={classes.textBox}>
+            <form noValidate autoComplete="on">
 
               <TextField
                 id="outlined-multiline-static"
@@ -616,7 +661,7 @@ const App = () => {
 
         </Grid>
 
-        <Grid item xs={12} justifyContent = 'center'>
+        <Grid item xs={12} justifyContent='center'>
           <form className={classes.textBox} noValidate autoComplete="off">
 
             <TextField
