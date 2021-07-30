@@ -5,22 +5,14 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    // flexWrap: 'wrap',
-    // '& > *': {
-    //   margin: 1,
-      
-    //   padding: 5,
-    //   width: theme.spacing(100),
-    //   height: theme.spacing(15),
-    // },
+    // display: 'flex',
     width: '100%'
   },
   title:{
     fontSize: 20,
     margin: 2,
     marginTop:10,
-    padding:0,
+    padding:5,
     textAlign: "center",
 
   }
