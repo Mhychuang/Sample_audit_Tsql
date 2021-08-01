@@ -262,6 +262,8 @@ const App = () => {
 
   const handleSubmit = (e) => {
 
+    //some issues here
+
     !sampleDetail.DateOfCount ? setFormValidation({ ...formValidation, DateOfCount: true }) : console.log('DateOfCount');
     !sampleDetail.TimeOfCount ? setFormValidation({ ...formValidation, TimeOfCount: true }) : console.log('TimeOfCount');
     sampleDetail.VotingEquipmentUsed.length === 0 ? setFormValidation({ ...formValidation, VotingEquipmentUsed: true }) : console.log('VotingEquipmentUsed');
