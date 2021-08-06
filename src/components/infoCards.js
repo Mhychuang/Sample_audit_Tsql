@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     textAlign: "center",
     align: "center",
     minHeight: 5,
-    height: '5vw'
+    // height: '5vw'
 
   },
 
