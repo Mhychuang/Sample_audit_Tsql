@@ -18,8 +18,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="https://www.ncsbe.gov/">
+        NCSBE
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -61,11 +61,11 @@ const authenticateUser = (email, password)=>{
 export default function LoginPage(props) {
   const classes = useStyles();
 
-  const history = useHistory();
+   const history = useHistory();
 
-  const handleLogin = () => {
+  const handleLogin = (e: any) => {
     //get data through API and vrify login
-
+    //http://localhost:4000/auth/testuser1@alamance.gov/randomHash1
     const userData = authenticateUser();
     
     if (userData === null){

@@ -10,16 +10,7 @@ import Edit from '@material-ui/icons/Edit';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
 import Paper from '@material-ui/core/Paper';
-import Container from '@material-ui/core/Container';
-import Card from '@material-ui/core/Card';
-import Select from '@material-ui/core/Select';
-
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -43,16 +34,6 @@ import Cards from '../components/infoCards';
 import SimplePaper from '../components/simplePaper';
 
 const AuditForm = (props) => {
-  const [countyOptions, setCountyOptions] = React.useState({
-    selectOptions: [],
-    id: "",
-    name: ""
-  });
-
-  const [sampleOptions, setSampleOptions] = useState({
-    sampleOptionsList: [],
-    countyId: ""
-  });
 
   const emptySampleDetail = {
     CountyId: "",
@@ -80,7 +61,7 @@ const AuditForm = (props) => {
     ...emptySampleDetail
   });
 
-  const [showExplanation, setShowExplanation] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(true)
 
 
   const [formValidation, setFormValidation] = useState({
@@ -104,48 +85,6 @@ const AuditForm = (props) => {
   const [submitButtonLabel, setSubmitButtonLabel] = useState('Submit')
 
 
-  async function getCounty() {
-    const response = await axios.get("http://localhost:4000/allCounty");
-    const data = await response.data; //.json();
-    console.log(data);
-
-    setCountyOptions({ selectOptions: data });
-  }
-
-
-
-  React.useEffect(() => {
-    getCounty();
-    console.log(!sampleDetail.HumanOrMachineError)
-  }, []);
-
-  React.useEffect(() => { }, [sampleOptions]);
-
-
-
-  const getSampleByCounty = async (countyId) => {
-    const response = await axios.get(
-      `http://localhost:4000/getSampleIdByCounty/${countyId}`
-    );
-    const data = await response.data;
-    // const options = data.map((d) => ({
-    //   value: d.SampleId,
-    //   label: d.SampleId
-    // }));
-    // options.unshift({value:'', label:''})
-
-
-    setSampleOptions({
-      sampleOptionsList: data,
-      countyId: countyId
-    });
-
-
-
-    setSampleDetail({ ...emptySampleDetail })
-
-
-  };
 
   const getdataByCountyandsample = async (countyId, sampleId) => {
     const response = await axios.get(
@@ -156,17 +95,21 @@ const AuditForm = (props) => {
     setSampleDetail({
       ...sampleDetail,
       CountyId: countyId,
-      SampleID: data.SampleId,
+      SampleID: data.SampleId.toString(),
       ElectionDate: data.ElectionDate,
       TypeOfSample: data.TypeOfSample,
       PrecinctSiteName: data.PrecinctSiteName,
       ContestName: data.ContestName,
       CountyName: data.CountyName
     });
-
-    console.log("data", data);
   };
 
+  const handleRadioButton = (e)=>{
+    let CountyId = sampleDetail.CountyId
+    let sampleId = e.target.value
+    getdataByCountyandsample(CountyId, sampleId)
+    getCandidateByCountyandsample(CountyId, sampleId);
+  }
 
 
 
@@ -199,29 +142,10 @@ const AuditForm = (props) => {
 
 
 
-
-
-  const handleCountySelect = (e) => {
-    let countyID = e.target.value; // not e.target.value?
-    console.log('countyId', countyID)
-    getSampleByCounty(countyID);
-
-    //console.log("selectedCounty2", sampleOptions.countyId);
-  };
-
-  const handleSampleSelect = (e) => {
-    let countyID = sampleOptions.countyId;
-    let SampleID = e.target.value; // not e.target.value?
-    getdataByCountyandsample(countyID, SampleID);
-    getCandidateByCountyandsample(countyID, SampleID);
-    setSelectedSampleId(SampleID);
-    //console.log("selectedCounty2", countyID, SampleID);
-  };
-
   const hasError = () => {
     let showError = false
-    console.log('formValidation', formValidation)
-    console.log('SampleDetailTrueorNot', !sampleDetail.DateOfCount)
+    // console.log('formValidation', formValidation)
+    // console.log('SampleDetailTrueorNot', !sampleDetail.DateOfCount)
 
     if (showExplanation) {
 
@@ -430,14 +354,17 @@ const AuditForm = (props) => {
   }, [candidateData]);
 
 
-  React.useEffect(() => {
-    console.log('candidate', candidateData)
-    console.log('sampleDetail', sampleDetail)
-
-  }, [sampleDetail]);
 
   React.useEffect(() => {
-    console.log(props.userData)
+    let userData = JSON.parse(props.userData)
+    console.log(typeof userData)
+    console.log(userData)
+    
+    let countyID = 1;
+    let SampleID = 1
+    getdataByCountyandsample(countyID, SampleID);
+    getCandidateByCountyandsample(countyID, SampleID);
+    console.log(sampleDetail.sampleId)
 
   }, []);
 
@@ -540,6 +467,9 @@ const AuditForm = (props) => {
     borderColor: 'text.primary',
   };
 
+  const clickFunction = ()=>{
+      console.log(sampleDetail)
+  }
 
 
   return (
@@ -549,47 +479,19 @@ const AuditForm = (props) => {
       <Grid container item justifyContent='center' >
         {title}
 
+    <button onClick = {clickFunction}> click</button>
+      </Grid>
 
-        <FormControl className={classes.formControl}>
-          <InputLabel id="demo-simple-select-helper-label">County</InputLabel>
-          <Select
-            labelId="demo-simple-select-helper-label"
-            id="demo-simple-select-helper"
-            value={countyOptions.countyOptions}
-            // onChange={handleChange}
-            onChange={handleCountySelect}
-          >
-
-            {countyOptions.selectOptions.map((data) => (
-              <MenuItem key={data.CountyId} value={data.CountyId}>
-                {data.CountyName}
-              </MenuItem>
-            ))}
-
-
-
-          </Select>
-          <FormHelperText>First, Select County</FormHelperText>
-        </FormControl>
-
-        <FormControl className={classes.formControl}>
-          <InputLabel id="demo-simple-select-helper-label">SampleID</InputLabel>
-          <Select
-            labelId="demo-simple-select-helper-label"
-            id="demo-simple-select-helper"
-            onChange={handleSampleSelect}
-          >
-
-            {sampleOptions.sampleOptionsList.map((data) => (
-              <MenuItem key={data.SampleId} value={data.SampleId}>
-                {data.SampleId}
-              </MenuItem>
-            ))}
-
-          </Select>
-          <FormHelperText>Then Select Sample</FormHelperText>
-        </FormControl>
-
+      <Grid container justifyContent='space-between'>
+      {/* <FormControl component="fieldset"> */}
+      {/* <FormLabel component="legend">Sample</FormLabel> */}
+      <Grid item>Sample</Grid>
+      {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.sampleId} onChange={handleRadioButton}> */}
+      <RadioGroup aria-label="gender" name="gender1" value= {sampleDetail.SampleID}  onChange={handleRadioButton} row>
+      <Grid item><FormControlLabel value= '1' control={<Radio />} label="Sample One" /></Grid>
+      <Grid item><FormControlLabel value= '2' control={<Radio />} label="Sample Two" /></Grid>
+      </RadioGroup>
+    {/* </FormControl> */}
 
       </Grid>
 
