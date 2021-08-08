@@ -24,12 +24,13 @@ export default function DatePickers(props) {
           id="date-picker-dialog"
           label="Select Date of count"
           format="MM/dd/yyyy"
-          helperText=""
           value={props.selectedDate}
           onChange={props.onDateChange}
           KeyboardButtonProps={{
             'aria-label': 'change date',
           }}
+          error ={props.formValidation.DateOfCount}
+          helperText = { props.formValidation.DateOfCount ?'Required':''}
         />
         <KeyboardTimePicker
           //margin="normal"
@@ -40,6 +41,8 @@ export default function DatePickers(props) {
           KeyboardButtonProps={{
             'aria-label': 'change time',
           }}
+          error ={props.formValidation.TimeOfCount}
+          helperText = { props.formValidation.TimeOfCount ?'Required':''}
         />
 
         </Grid>

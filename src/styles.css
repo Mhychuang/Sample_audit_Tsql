@@ -1,40 +1,12 @@
 .App {
   font-family: sans-serif;
 }
+nav ul{
+  display: flex;
+  justify-content: flex-end;
+}
 
-.selection {
-  /* float: left; */
+nav li{
+  list-style: none;
   padding: 10px;
-  /* position: absolute; */
-}
-
-div.CountyName {
-  /* float: left; */
-  /* width: 300px; */
-  /* margin: auto; */
-  border: 3px solid #73ad21;
-  /* text-align: center; */
-}
-
-div.SampleID {
-  /* float: right; */
-  /* width: 300px; */
-  /* margin: auto; */
-  border: 3px solid #73ad21;
-  /* text-align: center; */
-}
-
-
-.TitleText {
-  font-family: sans-serif;
-  text-align: center;
-}
-
-.MuiTypography-h6{
-  text-align: center;
-  font-size: 1rem;
-  color: blue;
-  font-weight: bold;
-  /* overflow:auto; */
-  
 }
