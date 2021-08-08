@@ -1,4 +1,6 @@
 import React from 'react';
+import { useState } from "react";
+import axios from "axios";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -27,6 +29,7 @@ function Copyright() {
   );
 }
 
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -47,34 +50,61 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const authenticateUser = (email, password)=>{
+const authenticateUser = async (email, password)=>{
+    console.log(email, password)
 
-  return(
-      {
-      countyid: 1,
-      defaultPassword: false
-  });
-  
+    const response = await axios.get(
+        `http://localhost:4000/auth/${email}/${password}`
+      );
+    
+      let userData = await response.data;
+
+      return userData;
 }
 
 
+
 export default function LoginPage(props) {
-  const classes = useStyles();
 
-   const history = useHistory();
 
-  const handleLogin = (e: any) => {
-    //get data through API and vrify login
-    //http://localhost:4000/auth/testuser1@alamance.gov/randomHash1
-    const userData = authenticateUser();
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
+ 
+    const handleEmail = (e) =>{
+        console.log(e.target.value)
+        setEmail(e.target.value)
+        
+    }
     
-    if (userData === null){
-        //print error message
-    }else{
-        props.onUserAuthenticated(userData)
-        history.push("/audit-form")
+    const handlePassword = (e) =>{
+        setPassword(e.target.value)
 
     }
+
+
+  const classes = useStyles();
+
+  // const history = useHistory();
+
+  const handleLogin = (e) => {
+    //get data through API and vrify login
+    
+   
+    console.log(e)
+    const userData = authenticateUser(email, password);
+    // console.log('userData', userData)
+
+    alert(userData[0])
+    
+
+
+    // if (userData === null){
+    //     //print error message
+    // }else{
+    //     props.onUserAuthenticated(userData)
+    //     history.push("/audit-form")
+
+    // }
 
 
   };
@@ -101,6 +131,7 @@ export default function LoginPage(props) {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange = {handleEmail}
           />
           <TextField
             variant="outlined"
@@ -112,6 +143,7 @@ export default function LoginPage(props) {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange = {handlePassword}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -124,6 +156,7 @@ export default function LoginPage(props) {
             color="primary"
             className={classes.submit}
             onClick= {handleLogin}
+            
           >
             Sign In
           </Button>
