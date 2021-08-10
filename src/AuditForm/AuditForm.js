@@ -356,11 +356,9 @@ const AuditForm = (props) => {
 
 
   React.useEffect(() => {
-    let userData = JSON.parse(props.userData)
-    console.log(typeof userData)
-    console.log(userData)
-    
-    let countyID = 1;
+   
+    console.log(props.userData.CountyId)
+    let countyID = props.userData.CountyId;
     let SampleID = 1
     getdataByCountyandsample(countyID, SampleID);
     getCandidateByCountyandsample(countyID, SampleID);

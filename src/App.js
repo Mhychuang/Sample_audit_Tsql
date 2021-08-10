@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,21 +11,15 @@ import {
 import "./styles.css";
 import AuditForm from "./AuditForm";
 import LoginPage from "./LoginPage";
-
-
-
-
+import ChangePassword from "./ChangePassword";
 
 const App = () => {
-  const [userData, setUserData] = useState(null);
-
+  const [userData, setUserData] = useState({IsDefault: "default"});
+  console.log(userData)
   const handleUserAuthenticated =(userData)=>{
-    setUserData(userData)
-
-
+    // console.log(userData);
+    setUserData(userData);
   }
-  
-
 
 
 
@@ -38,11 +32,11 @@ const App = () => {
               <Link to="/">Home</Link>
             </li>
             <li>
-              {userData !== null && <Link to="/audit-form">Audit Form</Link>  }
-              
+              {userData.IsDefault === "False" && <Link to="/audit-form">Audit Form</Link> }
             </li>
             <li>
-              <Link to="/login">Login</Link>
+              {userData.IsDefault === "False"? <Link to="/logout" onClick={() => setUserData({IsDefault: "default"})}>Logout</Link>:<Link to="/login">Login</Link>}
+              {/* <Link to="/login">Login</Link> */}
             </li>
           </ul>
         </nav>
@@ -52,6 +46,9 @@ const App = () => {
         <Switch>
           <Route path="/login">
             <LoginPage onUserAuthenticated = {handleUserAuthenticated} />
+          </Route>
+          <Route path="/change-password">
+            <ChangePassword userData = {userData}/>
           </Route>
           <Route exact path={"/audit-form"}  >
             <AuditForm userData = {userData}/>

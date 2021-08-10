@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useHistory } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +13,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -46,8 +48,56 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoginPage(props) {
+
+const updatePassword = async (webUserId, password) => {
+  //console.log('updatFunction', putbody);
+  let putbody = {
+    "WebUserId": webUserId,
+    "UserPassword": password
+  }
+  const res = await axios.put(`http://localhost:4000/auth/updateWebUser`, putbody);
+}
+
+export default function ChargePassword(props) {
   const classes = useStyles();
+  const history = useHistory();
+
+  const [newPassword, setNewPassword] = useState();
+  const [confirmPassword, setConfirmPassword] = useState();
+  const [webUserId, setWebUserId] = useState();
+
+  //setWebUserId(props.userData.WebUserId)
+
+  const handleNew = (e) => {
+    setNewPassword(e.target.value)
+  }
+
+  const handleConfirm = (e) => {
+    setConfirmPassword(e.target.value)
+  }
+
+  React.useEffect(() => {
+    setWebUserId(props.userData.WebUserId)
+
+  }, []);
+
+
+  const handleChangePassword = () => {
+    // api call to save new password
+    // when successful
+    
+
+    if (newPassword === confirmPassword) {
+      //props.onPasswordChanged();
+      //console.log(props.userData.WebUserId) 
+      alert(webUserId)
+      updatePassword(webUserId, newPassword)
+
+      history.push('/login');
+    } else {
+      alert("Passwords don't match")
+    }
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -57,7 +107,7 @@ export default function LoginPage(props) {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Change Password
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
@@ -65,49 +115,37 @@ export default function LoginPage(props) {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
+            name="New Password"
+            label="New Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={handleNew}
           />
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Password"
+            name="Confirm Password"
+            label="Confirm Password"
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={handleConfirm}
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick= {props.onLoginButtonClick}
+            onClick={handleChangePassword}
           >
-            Sign In
+            Change Password
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
+
         </form>
       </div>
       <Box mt={8}>
