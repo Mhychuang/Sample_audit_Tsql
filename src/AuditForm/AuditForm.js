@@ -25,6 +25,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from "@material-ui/core/Collapse";
+import { borders } from '@material-ui/system';
+
 
 
 //components
@@ -84,6 +86,12 @@ const AuditForm = (props) => {
 
   const [submitButtonLabel, setSubmitButtonLabel] = useState('Submit')
 
+  const [label, setLabel] = useState({
+    labelOne: "",
+    labelTwo: " Done"
+
+  })
+
 
 
   const getdataByCountyandsample = async (countyId, sampleId) => {
@@ -104,7 +112,7 @@ const AuditForm = (props) => {
     });
   };
 
-  const handleRadioButton = (e)=>{
+  const handleRadioButton = (e) => {
     let CountyId = sampleDetail.CountyId
     let sampleId = e.target.value
     getdataByCountyandsample(CountyId, sampleId)
@@ -356,7 +364,7 @@ const AuditForm = (props) => {
 
 
   React.useEffect(() => {
-   
+
     console.log(props.userData.CountyId)
     let countyID = props.userData.CountyId;
     let SampleID = 1
@@ -465,9 +473,9 @@ const AuditForm = (props) => {
     borderColor: 'text.primary',
   };
 
-  const clickFunction = ()=>{
-      console.log(sampleDetail)
-  }
+  // const clickFunction = ()=>{
+  //     console.log(sampleDetail)
+  // }
 
 
   return (
@@ -477,24 +485,30 @@ const AuditForm = (props) => {
       <Grid container item justifyContent='center' >
         {title}
 
-    <button onClick = {clickFunction}> click</button>
+        {/* <button onClick = {clickFunction}> click</button> */}
       </Grid>
 
-      <Grid container justifyContent='space-between'>
-      {/* <FormControl component="fieldset"> */}
-      {/* <FormLabel component="legend">Sample</FormLabel> */}
-      <Grid item>Sample</Grid>
-      {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.sampleId} onChange={handleRadioButton}> */}
-      <RadioGroup aria-label="gender" name="gender1" value= {sampleDetail.SampleID}  onChange={handleRadioButton} row>
-      <Grid item><FormControlLabel value= '1' control={<Radio />} label="Sample One" /></Grid>
-      <Grid item><FormControlLabel value= '2' control={<Radio />} label="Sample Two" /></Grid>
-      </RadioGroup>
-    {/* </FormControl> */}
+      <Grid container justifyContent='center' spacing={1}>
+        {/* <FormControl component="fieldset"> */}
+        {/* <FormLabel component="legend">Sample</FormLabel> */}
+        {/* <Grid item xs={3}>Sample</Grid> */}
+        {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.sampleId} onChange={handleRadioButton}> */}
+        <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleID} onChange={handleRadioButton} row>
+          {/* <Grid item ><FormControlLabel value='1' control={<Radio />} label="Sample One" /></Grid> */}
+          <Box border={1} borderColor="primary.main" borderRadius={16} component="span" m={2} p={1} pr={2} >
+            <FormControlLabel value='1' control={<Radio />} label={<span style={{ fontSize: '130%' }}>Sample One {label.labelTwo}</span>} />
+            
+          </Box>
+          <Box border={1} borderColor="primary.main" borderRadius={16} component="span" m={2} p={1} pr={2}>
+            <FormControlLabel value='2' control={<Radio />} label={<span style={{ fontSize: '130%' }}>Sample Two</span>}  />
+            </Box>
+        </RadioGroup>
+        {/* </FormControl> */}
 
       </Grid>
 
 
-      <Grid container item spacing = {0} justifyContent='space-between' alignItems = 'stretch'>
+      <Grid container item spacing={0} justifyContent='space-between' alignItems='stretch'>
 
         <Grid item xs >
           <Cards cardName={'County'} CardValue={sampleDetail.CountyName} />
@@ -510,7 +524,7 @@ const AuditForm = (props) => {
           <Cards cardName={'Type Of Sample'} CardValue={sampleDetail.TypeOfSample} />
         </Grid>
         <Grid item xs >
-          <Cards cardName={'Precinct Site Name'} CardValue={sampleDetail.PrecinctSiteName} />
+          <Cards cardName={'Site Name'} CardValue={sampleDetail.PrecinctSiteName} />
         </Grid>
       </Grid>
 

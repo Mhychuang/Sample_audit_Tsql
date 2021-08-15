@@ -58,6 +58,8 @@ const updatePassword = async (webUserId, password) => {
   const res = await axios.put(`http://localhost:4000/auth/updateWebUser`, putbody);
 }
 
+
+
 export default function ChargePassword(props) {
   const classes = useStyles();
   const history = useHistory();
@@ -83,10 +85,7 @@ export default function ChargePassword(props) {
 
 
   const handleChangePassword = () => {
-    // api call to save new password
-    // when successful
-    
-
+    //ev.preventDefault()
     if (newPassword === confirmPassword) {
       //props.onPasswordChanged();
       //console.log(props.userData.WebUserId) 
@@ -136,7 +135,7 @@ export default function ChargePassword(props) {
           />
 
           <Button
-            type="submit"
+            type="button"
             fullWidth
             variant="contained"
             color="primary"
