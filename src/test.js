@@ -1,35 +1,33 @@
-//normal function that returns promsise with resolve and reject
-const  foo=(x)=> {
-    return new Promise((resolve, reject)=>{
-      //usually this is api call and if we get 404?
-      if (x<5){  
-        resolve('smaller then five')
-      }else{
-        reject('bigger than five')
+async function waitAndMaybeReject() {
+    // Wait one second
+    await new Promise(r => setTimeout(r, 1000));
+    // Toss a coin
+    const isHeads = Boolean(Math.round(Math.random()));
+  
+    if (isHeads) return 'yay';
+    throw new Error('Boo!');
+  }
+  
+  async function myFunctionThatCatches() {
+      try {
+          
+          const value = await waitAndMaybeReject(); // <-- Notice we added here the "await" keyword.
+          console.log("what is value", value);
+          console.log("type of", typeof value);
+
+
+          return value
+      } catch (e) {
+          console.error(e.message);
+      } finally {
+          console.log('We do cleanup here');
       }
-    })
-  }
-
-
-  async function foo5(val) {
-    if (val < 5) {
-      throw new Error('foo5 error < 5')
-    } else {
-      return 'smaller then five';
-    }
-  }
-
-
-
-  async function callFoo() {
-    let v = await foo5(50);
-    if (v === 'whatever') {
-  
-    } else {
-      
-    }
-    return v;
+      return "Nothing found";
   }
   
-  callFoo()
-    .catch(err => console.log(err));
+  async function run() {
+      const myValue = await myFunctionThatCatches();
+      console.log("show value here", myValue);
+  }
+  
+  run();

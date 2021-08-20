@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.11.2",
     "axios": "0.21.1",
     "formik": "2.2.9",
+    "js-cookie": "^3.0.0",
     "material-table": "^1.69.3",
     "react": "16.13.1",
     "react-bootstrap": "1.6.1",

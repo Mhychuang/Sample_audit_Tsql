@@ -12,14 +12,46 @@ import "./styles.css";
 import AuditForm from "./AuditForm";
 import LoginPage from "./LoginPage";
 import ChangePassword from "./ChangePassword";
+import Cookies from 'js-cookie';
+
+
+function initUserData (){
+  const userDataCookies = Cookies.get('userData')
+
+  return userDataCookies === undefined ? {} : JSON.parse(userDataCookies)
+
+}
+
+const hasCookiesExpired =()=> Cookies.get('userData') === undefined;
 
 const App = () => {
-  const [userData, setUserData] = useState({IsDefault: "default"});
-  console.log(userData)
+  const [userData, setUserData] = useState(initUserData());
+
+
+  console.log('user data',userData)
   const handleUserAuthenticated =(userData)=>{
     // console.log(userData);
     setUserData(userData);
+    const in30Minutes = 1/3000;
+    Cookies.set('userData', JSON.stringify(userData), {
+        expires: in30Minutes
+    });
+
   }
+
+
+
+  const handleLogout = ()=>{
+    setUserData({});
+    Cookies.remove('userData')
+
+  }
+
+  // if (hasCookiesExpired()){
+  //   handleLogout();
+  // }
+
+  // hasCookiesExpired() && handleLogout()
 
 
 
@@ -35,8 +67,7 @@ const App = () => {
               {userData.IsDefault === "False" && <Link to="/audit-form">Audit Form</Link> }
             </li>
             <li>
-              {userData.IsDefault === "False"? <Link to="/logout" onClick={() => setUserData({IsDefault: "default"})}>Logout</Link>:<Link to="/login">Login</Link>}
-              {/* <Link to="/login">Login</Link> */}
+              {userData.IsDefault === "False"? <Link to="/logout" onClick={handleLogout}>Logout</Link>:<Link to="/login">Login</Link>}
             </li>
           </ul>
         </nav>

@@ -14,6 +14,11 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useHistory } from "react-router-dom";
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+
+
 
 import { authenticateUser } from './api';
 
@@ -48,12 +53,34 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper2: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[1],
+    padding: theme.spacing(2, 4, 3),
+  },
 }));
 
 export default function LoginPage(props) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const history = useHistory();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
 
   const handleEmail = (e) => {
     console.log(e.target.value)
@@ -157,15 +184,41 @@ return (
           Sign In
         </Button>
         <Grid container justifyContent="flex-end">
-          <Grid item >
+          <Grid item type="button" onClick={handleOpen}>
             <Link href="#" variant="body2">
-              Forgot password?
+            Forgot password?
             </Link>
+
+            {/* <button type="button" onClick={handleOpen}>
+            Forgot password?
+            </button> */}
+
           </Grid>
 
         </Grid>
       </form>
+
+
     </div>
+    <Modal
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        // closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <div className={classes.paper2}>
+            <h2 >Forget Password?</h2>
+            <p >Please send a help desk ticket to </p>
+            <p >helpdesk@ncsbe.gov</p>
+            <p >to rest your password </p>
+          </div>
+        </Fade>
+      </Modal>
     <Box mt={8}>
       <Copyright />
     </Box>
