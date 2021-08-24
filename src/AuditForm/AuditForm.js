@@ -9,23 +9,20 @@ import { forwardRef } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
-import DateFnsUtils from '@date-io/date-fns';
-import Paper from '@material-ui/core/Paper';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import Box from '@material-ui/core/Box';
 import Typography from "@material-ui/core/Typography";
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import Switch from '@material-ui/core/Switch';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from "@material-ui/core/Collapse";
-import { borders } from '@material-ui/system';
+
+
+import moment from 'moment-timezone';
+
 
 
 
@@ -34,6 +31,8 @@ import DatePickers from '../components/timepicker';
 import CheckboxLabels from '../components/checkboxs';
 import Cards from '../components/infoCards';
 import SimplePaper from '../components/simplePaper';
+
+moment.tz.setDefault("America/New_York");
 
 const AuditForm = (props) => {
 
@@ -48,14 +47,14 @@ const AuditForm = (props) => {
     CandidateName1: "",
     CandidateName2: "",
     //to update
-    DateOfCount: null,
-    TimeOfCount: null,//Date.now(),
-    VotingEquipmentUsed: [],
-    HumanOrMachineError: "",
-    DifferenceExplanation: "",
-    PeoplePartyCounting: "",
-    TotalTime: "",
-    CostOfCount: ""
+    // DateOfCount: null,
+    // TimeOfCount: null,//Date.now(),
+    // VotingEquipmentUsed: [],
+    // HumanOrMachineError: "",
+    // DifferenceExplanation: "",
+    // PeoplePartyCounting: "",
+    // TotalTime: "",
+    // CostOfCount: ""
 
   }
 
@@ -76,7 +75,7 @@ const AuditForm = (props) => {
     HumanOrMachineError: false,
     DifferenceExplanation: false,
     CandidatesCounts: false,
- 
+
   })
 
   const [selectedSampleId, setSelectedSampleId] = useState('');
@@ -103,7 +102,11 @@ const AuditForm = (props) => {
       `http://localhost:4000/getDetailByCountySampleId/${countyId}/${sampleId}`
     );
     let data = await response.data;
+    console.log(data)
 
+    const CostOfCount = Number(data.CostOfCount)
+    const TotalTime = Number(data.TotalTime)
+    const VotingArray = data.VotingEquipmentUsed.split(',');
     setSampleDetail({
       ...sampleDetail,
       CountyId: countyId,
@@ -112,7 +115,15 @@ const AuditForm = (props) => {
       TypeOfSample: data.TypeOfSample,
       PrecinctSiteName: data.PrecinctSiteName,
       ContestName: data.ContestName,
-      CountyName: data.CountyName
+      CountyName: data.CountyName,
+      DateOfCount: data.DateOfCount,
+      TimeOfCount: data.TimeOfCount,
+      VotingEquipmentUsed: VotingArray,
+      HumanOrMachineError: data.HumanOrMachineError,
+      DifferenceExplanation: data.DifferenceExplanation,
+      PeoplePartyCounting: data.PeoplePartyCounting,
+      TotalTime: TotalTime,
+      CostOfCount: CostOfCount
     });
   };
 
@@ -137,16 +148,18 @@ const AuditForm = (props) => {
 
 
   const updateCandidate = async (newData, canId, putbody) => {
+    console.log('putbody', putbody)
+    console.log('canId', canId)
     const res = await axios.put(`http://localhost:4000/updateCandidate/${canId}`, putbody);
-    console.log(newData)
-    console.log(candidateData)
+    // console.log(newData)
+    // console.log(candidateData)
     let updateData = [...candidateData]
     let objIndex = updateData.findIndex((obj => obj.SampleCandidateId == newData.SampleCandidateId));
     updateData[objIndex].Machine = parseInt(newData.Machine)
     updateData[objIndex].HandToEye = parseInt(newData.HandToEye)
     updateData[objIndex].DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
     setCandidateData(updateData)
-    console.log(updateData)
+    // console.log(updateData)
 
   }
 
@@ -211,58 +224,65 @@ const AuditForm = (props) => {
 
     newFormValidation = sampleDetail.VotingEquipmentUsed.length === 0 ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
 
-    newFormValidation = !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
+    newFormValidation = showExplanation && !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
     newFormValidation = showExplanation && !sampleDetail.DifferenceExplanation ? { ...newFormValidation, DifferenceExplanation: true } : newFormValidation;
     newFormValidation = !sampleDetail.PeoplePartyCounting ? { ...newFormValidation, PeoplePartyCounting: true } : newFormValidation;
     newFormValidation = !sampleDetail.CostOfCount ? { ...newFormValidation, CostOfCount: true } : newFormValidation;
     newFormValidation = !sampleDetail.TotalTime ? { ...newFormValidation, TotalTime: true } : newFormValidation;
 
-    let HandToEyeIsZero = candidateData.some(obj=> obj.HandToEye != 0)
-    let MachineIsZero = candidateData.some(objs=> objs.Machine != 0)
+    let HandToEyeIsZero = candidateData.some(obj => obj.HandToEye != 0)
+    let MachineIsZero = candidateData.some(objs => objs.Machine != 0)
 
 
-    newFormValidation = !HandToEyeIsZero&&!MachineIsZero ? { ...newFormValidation, CandidatesCounts: true }:newFormValidation;
+    newFormValidation = !HandToEyeIsZero && !MachineIsZero ? { ...newFormValidation, CandidatesCounts: true } : newFormValidation;
 
     setFormValidation(newFormValidation)
 
     // if sampleDetail.DateOfCount 
 
     //loop throuh every properties in the obj
-    var trueCount = 0
 
-    for (var key in formValidation) {
-      if (formValidation[key]){
-      trueCount += 1
+    console.log(newFormValidation)
+    let trueCount = 0
+
+    for (var key in newFormValidation) {
+      if (newFormValidation[key]) {
+        trueCount += 1
       }
-        }
+    }
+
+    console.log('before submit date', sampleDetail.DateOfCount)
+
+    console.log('before submit time', sampleDetail.TimeOfCount)
 
     // didn't get the most recent formValidation
     //console.log(sampleDetail.TimeOfCount)
 
     //use newFormValidation
-    console.log(newFormValidation)
-    console.log(trueCount)
-        //trueCount== 0
-    if (true) {
 
-      var labeltochange = 'label'+ sampleDetail.SampleID +"Color"
-      console.log(label)
+
+
+    //trueCount== 0
+    if (trueCount == 0) {
+      console.log(sampleDetail.SampleID)
+      var labeltochange = 'label' + sampleDetail.SampleID + "Color"
+      console.log(labeltochange)
       //use square bracket we can pass in string 
-      setLabel({...label, [labeltochange]: "success.main"})
+      setLabel({ ...label, [labeltochange]: "success.main" })
 
       updateSample(sampleDetail.CountyId, sampleDetail.SampleID, sampleDetail)
-      .then(response => {
-        console.log(response)
-        setFormInfoSubmitted(false);
-      })
-      .catch(error => {
-        console.log(error)
-      })
+        .then(response => {
+          console.log(response)
+          setFormInfoSubmitted(false);
+        })
+        .catch(error => {
+          console.log(error)
+        })
 
 
 
     } else {
-      alert ("please filled in required cells")
+      alert("please filled in required cells")
       setFormInfoSubmitted(false)
 
 
@@ -278,7 +298,7 @@ const AuditForm = (props) => {
 
   const columns = [
     {
-      title: "Candidate Name", field: "CandidateName", editable: 'never', 
+      title: "Candidate Name", field: "CandidateName", editable: 'never',
 
     },
     {
@@ -306,7 +326,9 @@ const AuditForm = (props) => {
   }
 
   const handleDateChange = (date) => {
-    console.log('dateChange', date)
+
+    console.log('data of count', date)
+
     setSampleDetail({
       ...sampleDetail,
       DateOfCount: date
@@ -316,9 +338,18 @@ const AuditForm = (props) => {
   }
 
   const handleTimeChange = (time) => {
+
+    console.log('OG time of count', time)
+
+    //console.log('dateChange', date)
+    const NewTime = time.toLocaleString('en-US', { timeZone: 'America/New_York' })
+    console.log('NewTime', NewTime)
+
+
+
     setSampleDetail({
       ...sampleDetail,
-      TimeOfCount: time
+      TimeOfCount: NewTime
 
     })
     setFormValidation({ ...formValidation, TimeOfCount: false })
@@ -327,7 +358,10 @@ const AuditForm = (props) => {
 
   const handleCheckbox = (event) => {
 
-    let updatedList = sampleDetail.VotingEquipmentUsed
+    let updatedList = sampleDetail.VotingEquipmentUsed;
+
+
+
     if (event.target.checked) {
       updatedList.push(event.target.name)
     }
@@ -378,7 +412,7 @@ const AuditForm = (props) => {
       DifferenceExplanation: e.target.value
     })
 
-    setFormValidation({...formValidation, DifferenceExplanation: false })
+    setFormValidation({ ...formValidation, DifferenceExplanation: false })
 
   }
 
@@ -397,7 +431,7 @@ const AuditForm = (props) => {
 
 
     hasDifference ? setShowExplanation(true) : setShowExplanation(false)
-    
+
 
     console.log('showExplanation', showExplanation)
     console.log('candidate data', candidateData)
@@ -525,8 +559,10 @@ const AuditForm = (props) => {
     borderColor: 'text.primary',
   };
 
-  const clickFunction = ()=>{
-      console.log(label)
+  const clickFunction = () => {
+    console.log(sampleDetail)
+    console.log(candidateData)
+    console.log('sampleDetail.CostOfCount', sampleDetail.CostOfCount)
   }
 
 
@@ -537,7 +573,7 @@ const AuditForm = (props) => {
       <Grid container item justifyContent='center' >
         {title}
 
-        <button onClick = {clickFunction}> click</button>
+        <button onClick={clickFunction}> click</button>
       </Grid>
 
       <Grid container justifyContent='center' spacing={1}>
@@ -608,7 +644,7 @@ const AuditForm = (props) => {
               </Grid>
 
               <Grid item xs={6} className={classes.VotingEquipmentUsed} style={{ border: "1px solid grey" }}>
-                <FormControl  error={formValidation.VotingEquipmentUsed}>
+                <FormControl error={formValidation.VotingEquipmentUsed}>
                   <FormLabel ><Typography className={classes.title}>Voting equipment used for this sample</Typography></FormLabel>
 
                   <CheckboxLabels
@@ -616,7 +652,7 @@ const AuditForm = (props) => {
                     list={sampleDetail.VotingEquipmentUsed}>
                   </CheckboxLabels>
 
-                  <FormHelperText>{formValidation.VotingEquipmentUsed ?'Required':''}</FormHelperText>
+                  <FormHelperText>{formValidation.VotingEquipmentUsed ? 'Required' : ''}</FormHelperText>
                 </FormControl>
 
 
@@ -636,11 +672,13 @@ const AuditForm = (props) => {
                     //required
                     type="number"
                     id="filled-required"
-                    defaultValue="0.0"
+                    value={sampleDetail.TotalTime}
+
+
                     //variant="filled"
                     onChange={handleHourInput}
-                    error ={formValidation.TotalTime}
-                    helperText = { formValidation.TotalTime ?'Required':''}
+                    error={formValidation.TotalTime}
+                    helperText={formValidation.TotalTime ? 'Required' : ''}
                   />
                 </Grid>
               </Grid>
@@ -659,11 +697,13 @@ const AuditForm = (props) => {
                     //required
                     type="number"
                     id="filled-required"
-                    defaultValue="0.0"
+
+                    value={sampleDetail.CostOfCount}
+
                     //variant="filled"
                     onChange={handleCostInput}
-                    error ={formValidation.CostOfCount}
-                    helperText = { formValidation.CostOfCount ?'Required':''}
+                    error={formValidation.CostOfCount}
+                    helperText={formValidation.CostOfCount ? 'Required' : ''}
                   />
                 </Grid>
               </Grid>
@@ -673,27 +713,27 @@ const AuditForm = (props) => {
 
               <MaterialTable
                 title="Enter counts for each candidates"
-                title = {formValidation.CandidatesCounts? 
+                title={formValidation.CandidatesCounts ?
                   <Typography className={classes.error}>Every candidate counts is required</Typography>
-                  :"Enter counts for each candidates"}
+                  : "Enter counts for each candidates"}
                 columns={columns}
                 data={candidateData}
                 icons={tableIcons}
-             
+
                 options={{
                   search: false,
                   paging: false,
-                  sorting: false, 
+                  sorting: false,
                   actionsColumnIndex: -1,
-                  
+
                 }}
 
-                style={ formValidation.CandidatesCounts && {border: '2px solid red'}}
+                style={formValidation.CandidatesCounts && { border: '2px solid red' }}
 
                 editable={{
                   onRowUpdate: (newData, oldData) => new Promise((resolve, reject) => {
-                    
-                    setFormValidation({...formValidation, CandidatesCounts: false})
+
+                    setFormValidation({ ...formValidation, CandidatesCounts: false })
                     //Backend call
                     let canId = oldData.SampleCandidateId
                     //let putbody = JSON.stringify(newData)
@@ -702,7 +742,7 @@ const AuditForm = (props) => {
                     // DifferenceInCount == 0 ? setShowExplanation('none') : setShowExplanation('block');
 
                     let putbody = {
-                      "CandidateId": newData.SampleCandidateId,
+                      "SampleCandidateId": newData.SampleCandidateId,
                       "Machine": newData.Machine,
                       "HandToEye": newData.HandToEye,
                       "DifferenceInCount": DifferenceInCount
@@ -737,16 +777,16 @@ const AuditForm = (props) => {
               />
             </Grid>
 
-            <Grid container item xs={12} justifyContent='center' >
-              <Collapse in={showExplanation} timeout={1500}>
-                <Fade in={showExplanation} timeout={500}>
+            <Grid Container item xs={12} justifyContent='center' spacing={5}>
+              {/* <Collapse in={showExplanation} timeout={1500}>
+                <Fade in={showExplanation} timeout={500}> */}
 
-                {/* <Collapse in={true} timeout={1}>
-                <Fade in={true} timeout={1}> */}
+              <Collapse in={true} timeout={1000} justifyContent='center'>
+                <Fade in={true} timeout={1000} justifyContent='center'>
 
-                  <Grid container item xs={12} justifyContent='center' 
-                  style={ formValidation.DifferenceExplanation && {border: '2px solid red'}}>
-                    <Grid item xs={12} className={classes.title}>
+                  <Grid container justifyContent='center'
+                    style={formValidation.DifferenceExplanation && { border: '2px solid red' }}>
+                    <Grid item className={classes.title}>
                       <Typography className={classes.title}>Explanation of any difference (skip this section if there was no difference in any totals)</Typography>
                       {/* error={formValidation.PeoplePartyCounting}
                   helperText={formValidation.PeoplePartyCounting ? 'Required' : ' '} */}
@@ -782,7 +822,7 @@ const AuditForm = (props) => {
 
                       </form>
                     </Grid>
-                  
+
                   </Grid>
                 </Fade>
               </Collapse>
@@ -799,10 +839,11 @@ const AuditForm = (props) => {
                 <TextField
 
                   id="outlined-multiline-static"
-                  label="Name, Party affiliation;"
+                  //label="Name, Party affiliation;"
                   multiline
                   rows={5}
-                  //defaultValue="Name, party affiliation"
+                  //defaultValue={sampleDetail.PeoplePartyCounting}
+                  value={sampleDetail.PeoplePartyCounting}
                   variant="outlined"
                   onChange={handlePeople}
 

@@ -47,11 +47,6 @@ const App = () => {
 
   }
 
-  // if (hasCookiesExpired()){
-  //   handleLogout();
-  // }
-
-  // hasCookiesExpired() && handleLogout()
 
 
 
