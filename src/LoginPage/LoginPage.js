@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState } from "react";
-import axios from "axios";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,6 +14,13 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useHistory } from "react-router-dom";
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+
+
+
+import { authenticateUser } from './api';
 
 function Copyright() {
   return (
@@ -28,7 +34,6 @@ function Copyright() {
     </Typography>
   );
 }
-
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -48,131 +53,175 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper2: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[1],
+    padding: theme.spacing(2, 4, 3),
+  },
 }));
 
-const authenticateUser = async (email, password)=>{
-    console.log(email, password)
-
-    const response = await axios.get(
-        `http://localhost:4000/auth/${email}/${password}`
-      );
-    
-      let userData = await response.data;
-
-      return userData;
-}
-
-
-
 export default function LoginPage(props) {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const history = useHistory();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
 
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
- 
-    const handleEmail = (e) =>{
-        console.log(e.target.value)
-        setEmail(e.target.value)
-        
-    }
-    
-    const handlePassword = (e) =>{
-        setPassword(e.target.value)
+  const handleEmail = (e) => {
+    console.log(e.target.value)
+    setEmail(e.target.value)
+  }
 
-    }
+  const handlePassword = (e) => {
+    setPassword(e.target.value)
+  }
 
 
   const classes = useStyles();
 
-  // const history = useHistory();
-
-  const handleLogin = (e) => {
+  const handleLogin = async () => {
     //get data through API and vrify login
-    
-   
-    console.log(e)
-    const userData = authenticateUser(email, password);
-    // console.log('userData', userData)
-
-    alert(userData[0])
-    
+    if (!email) { alert("please enter email") }
+    if (!password) { alert("please enter password") }
 
 
-    // if (userData === null){
-    //     //print error message
-    // }else{
-    //     props.onUserAuthenticated(userData)
-    //     history.push("/audit-form")
+    const userData = await authenticateUser(email, password);
 
-    // }
+    if (userData === "Email not in the system") {
+      alert(userData)
+    }
+    else if (userData === "login fail") {
+      alert("Wrong Password")
+    }
+    else {
+      //Successful login
+
+      
+      if (userData.IsDefault === 'True') {
+        props.onUserAuthenticated(
+          //webUserId: userData.WebUserId
+          userData
+        );
 
 
-  };
+
+        history.push('/change-password')
+      } else {
+        console.log(userData.CountyId)
+      
+        props.onUserAuthenticated(
+          //webUserId: userData.WebUserId
+          userData
+        );
+        history.push('/audit-form')
+      }
+    }
 
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            onChange = {handleEmail}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange = {handlePassword}
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick= {handleLogin}
-            
-          >
-            Sign In
-          </Button>
-          <Grid container  justifyContent="flex-end">
-            <Grid item >
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-    
+
+};
+
+return (
+  <Container component="main" maxWidth="xs">
+    <CssBaseline />
+    <div className={classes.paper}>
+      <Avatar className={classes.avatar}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <form className={classes.form} Validate>
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+          autoFocus
+          onChange={handleEmail}
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          onChange={handlePassword}
+        />
+ 
+        <Button
+          type="button"
+          fullWidth
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+          onClick={handleLogin}
+
+        >
+          Sign In
+        </Button>
+        <Grid container justifyContent="flex-end">
+          <Grid item type="button" onClick={handleOpen}>
+            <Link href="#" variant="body2">
+            Forgot password?
+            </Link>
+
+            {/* <button type="button" onClick={handleOpen}>
+            Forgot password?
+            </button> */}
+
           </Grid>
-        </form>
-      </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-    </Container>
-  );
+
+        </Grid>
+      </form>
+
+
+    </div>
+    <Modal
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        // closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <div className={classes.paper2}>
+            <h2 >Forget Password?</h2>
+            <p >Please send a help desk ticket to </p>
+            <p >helpdesk@ncsbe.gov</p>
+            <p >to rest your password </p>
+          </div>
+        </Fade>
+      </Modal>
+    <Box mt={8}>
+      <Copyright />
+    </Box>
+  </Container>
+);
 }
