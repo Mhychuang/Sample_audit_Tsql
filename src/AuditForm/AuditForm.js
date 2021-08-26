@@ -109,6 +109,13 @@ const AuditForm = (props) => {
     let data = await response.data;
     console.log('Sample Data', data)
 
+    let dateOfCount = String(data.DateOfCount)
+    dateOfCount = dateOfCount.slice(0,-1)
+
+    let TimeOfCount = String(data.TimeOfCount)
+    TimeOfCount = TimeOfCount.slice(0,-1)
+
+
     const CostOfCount = Number(data.CostOfCount)
     const TotalTime = Number(data.TotalTime)
     const VotingArray = data.VotingEquipmentUsed.split(',');
@@ -121,8 +128,8 @@ const AuditForm = (props) => {
       PrecinctSiteName: data.PrecinctSiteName,
       ContestName: data.ContestName,
       CountyName: data.CountyName,
-      DateOfCount: data.DateOfCount,
-      TimeOfCount: data.TimeOfCount,
+      DateOfCount: dateOfCount,
+      TimeOfCount: TimeOfCount,
       VotingEquipmentUsed: VotingArray,
       HumanOrMachineError: data.HumanOrMachineError,
       DifferenceExplanation: data.DifferenceExplanation,

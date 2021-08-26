@@ -18,6 +18,17 @@ import { convertToLocalTime } from 'date-fns-timezone';
 export default function DatePickers(props) {
 
 
+
+  console.log('ogDate', props.selectedDate)
+
+  // let dateOfCount = String(props.selectedDate)
+
+  
+
+  // dateOfCount = dateOfCount.slice(0,-1)
+
+  
+    
     
 
     return (
