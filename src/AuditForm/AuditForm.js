@@ -19,9 +19,11 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from "@material-ui/core/Collapse";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 
-import moment from 'moment-timezone';
+//import moment from 'moment-timezone';
 
 
 
@@ -31,10 +33,13 @@ import DatePickers from '../components/timepicker';
 import CheckboxLabels from '../components/checkboxs';
 import Cards from '../components/infoCards';
 import SimplePaper from '../components/simplePaper';
+import { useLoginCookiesTimer } from '../loginCookies';
 
-moment.tz.setDefault("America/New_York");
+//moment.tz.setDefault("America/New_York");
 
 const AuditForm = (props) => {
+  // const timer = useLoginCookiesTimer();
+  useLoginCookiesTimer();
 
   const emptySampleDetail = {
     CountyId: "",
@@ -99,10 +104,10 @@ const AuditForm = (props) => {
 
   const getdataByCountyandsample = async (countyId, sampleId) => {
     const response = await axios.get(
-      `http://localhost:4000/getDetailByCountySampleId/${countyId}/${sampleId}`
+      `http://localhost:4000/sampleAudit/getDetailByCountySampleId/${countyId}/${sampleId}`
     );
     let data = await response.data;
-    console.log(data)
+    console.log('Sample Data', data)
 
     const CostOfCount = Number(data.CostOfCount)
     const TotalTime = Number(data.TotalTime)
@@ -138,7 +143,7 @@ const AuditForm = (props) => {
 
   const getCandidateByCountyandsample = async (countyId, sampleId) => {
     try {
-      const response = await axios.get(`http://localhost:4000/getCandidateByCountySampleId/${countyId}/${sampleId}`);
+      const response = await axios.get(`http://localhost:4000/sampleAudit/getCandidateByCountySampleId/${countyId}/${sampleId}`);
       let data = await response.data;
       setCandidateData(data);
     } catch (error) {
@@ -150,22 +155,25 @@ const AuditForm = (props) => {
   const updateCandidate = async (newData, canId, putbody) => {
     console.log('putbody', putbody)
     console.log('canId', canId)
-    const res = await axios.put(`http://localhost:4000/updateCandidate/${canId}`, putbody);
+    const res = await axios.put(`http://localhost:4000/sampleAudit/updateCandidate`, putbody);
     // console.log(newData)
     // console.log(candidateData)
     let updateData = [...candidateData]
+    console.log('updateData', updateData)
+    console.log('newData', newData)
     let objIndex = updateData.findIndex((obj => obj.SampleCandidateId == newData.SampleCandidateId));
+    updateData[objIndex].CandidateName = newData.CandidateName
     updateData[objIndex].Machine = parseInt(newData.Machine)
     updateData[objIndex].HandToEye = parseInt(newData.HandToEye)
     updateData[objIndex].DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
     setCandidateData(updateData)
-    // console.log(updateData)
+    console.log('candidate update name', updateData)
 
   }
 
   const updateSample = async (CountyId, SampleID, putbody) => {
     //console.log('updatFunction', putbody);
-    const res = await axios.put(`http://localhost:4000//updateSample/${CountyId}/${SampleID}`, putbody);
+    const res = await axios.put(`http://localhost:4000/sampleAudit/updateSample`, putbody);
   }
 
 
@@ -298,7 +306,7 @@ const AuditForm = (props) => {
 
   const columns = [
     {
-      title: "Candidate Name", field: "CandidateName", editable: 'never',
+      title: "Candidate Name", field: "CandidateName",
 
     },
     {
@@ -559,10 +567,31 @@ const AuditForm = (props) => {
     borderColor: 'text.primary',
   };
 
+
+  const confirmAlertModal = () => {
+    console.log('In confirmAlertModal')
+
+    confirmAlert({
+      title: "Your login has expired. Would you like to stay logged in?",
+      message: "You will be log out in 30 seconds",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => alert("Click Yes")
+        },
+        {
+          label: "No",
+          onClick: () => alert("Click No")
+        }
+      ]
+    });
+  };
+
+
   const clickFunction = () => {
-    console.log(sampleDetail)
-    console.log(candidateData)
-    console.log('sampleDetail.CostOfCount', sampleDetail.CostOfCount)
+    console.log('sampleDetail', sampleDetail)
+    console.log('candidateData', candidateData)
+    //console.log('sampleDetail.CostOfCount', sampleDetail.CostOfCount)
   }
 
 
@@ -743,6 +772,7 @@ const AuditForm = (props) => {
 
                     let putbody = {
                       "SampleCandidateId": newData.SampleCandidateId,
+                      "CandidateName": newData.CandidateName,
                       "Machine": newData.Machine,
                       "HandToEye": newData.HandToEye,
                       "DifferenceInCount": DifferenceInCount
