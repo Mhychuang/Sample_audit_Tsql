@@ -45,16 +45,40 @@ export default function AlertDialog(props){
     return(
 
 
+        <Dialog
+        open={alertDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Your login expried."}
+        </DialogTitle>
 
 
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you want to stay login?
+          </DialogContentText>
 
+          <Countdown date={Date.now() + 3000}
+        renderer={renderer}
+        onComplete = {handleClose}
+        >
+       </Countdown>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDisagree} color="primary">
+            Logout
+          </Button>
+          <Button onClick={handleAgree} color="primary" autoFocus>
+            Stay
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
     )
-
-
-
-
 
 
 

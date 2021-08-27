@@ -247,7 +247,9 @@ const AuditForm = (props) => {
     newFormValidation = !sampleDetail.DateOfCount ? { ...newFormValidation, DateOfCount: true } : newFormValidation;
     newFormValidation = !sampleDetail.TimeOfCount ? { ...newFormValidation, TimeOfCount: true } : newFormValidation;
 
-    newFormValidation = sampleDetail.VotingEquipmentUsed.length === 0 ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+    // newFormValidation = sampleDetail.VotingEquipmentUsed.length === [""] ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+    newFormValidation = sampleDetail.VotingEquipmentUsed[0] === "" ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+
 
     newFormValidation = showExplanation && !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
     newFormValidation = showExplanation && !sampleDetail.DifferenceExplanation ? { ...newFormValidation, DifferenceExplanation: true } : newFormValidation;
@@ -633,7 +635,7 @@ const AuditForm = (props) => {
       <Grid container item justifyContent='center' >
         {title}
 
-        <button onClick={handleClickOpen}> click</button>
+        {/* <button onClick={handleClickOpen}> click</button> */}
 
         <button onClick={clickFunction}> click2</button>
 
