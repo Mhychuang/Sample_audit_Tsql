@@ -34,7 +34,7 @@ export function useLoginCookiesTimer() {
 
 export function setLoginCookies(userData) {
   //const in30Minutes = 1/48
-  const in30Minutes = 1/24;
+  const in30Minutes = 1/12;
   Cookies.set('userData', JSON.stringify(userData), {
       expires: in30Minutes
   });

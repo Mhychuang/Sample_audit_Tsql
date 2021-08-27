@@ -20,6 +20,7 @@
     "react": "16.13.1",
     "react-bootstrap": "1.6.1",
     "react-confirm-alert": "^2.7.0",
+    "react-countdown": "^2.3.2",
     "react-dom": "16.13.1",
     "react-material-ui-form-validator": "^2.1.4",
     "react-router-dom": "^5.2.0",
