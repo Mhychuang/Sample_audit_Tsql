@@ -89,7 +89,6 @@ export default function ChargePassword(props) {
     if (newPassword === confirmPassword) {
       //props.onPasswordChanged();
       //console.log(props.userData.WebUserId) 
-      alert(webUserId)
       updatePassword(webUserId, newPassword)
 
       history.push('/login');

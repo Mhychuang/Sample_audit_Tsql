@@ -221,7 +221,7 @@ return (
           <div className={classes.paper2}>
             <h2 >Forget Password?</h2>
             <p >Please send a help desk ticket to </p>
-            <p >helpdesk@ncsbe.gov</p>
+            <p >HelpRequest.SBOE@ncbse.gov</p>
             <p >to rest your password </p>
           </div>
         </Fade>

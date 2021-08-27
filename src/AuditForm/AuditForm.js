@@ -22,9 +22,16 @@ import Collapse from "@material-ui/core/Collapse";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 
-
 //import moment from 'moment-timezone';
 
+//for dialog
+// import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Countdown from 'react-countdown';
 
 
 
@@ -34,6 +41,7 @@ import CheckboxLabels from '../components/checkboxs';
 import Cards from '../components/infoCards';
 import SimplePaper from '../components/simplePaper';
 import { useLoginCookiesTimer } from '../loginCookies';
+import AlertDialog from '../components/alertDialog'
 
 //moment.tz.setDefault("America/New_York");
 
@@ -82,6 +90,8 @@ const AuditForm = (props) => {
 
   })
 
+//  const [radioValue, setRadioValue] = useState('Human')
+
   const [selectedSampleId, setSelectedSampleId] = useState('');
 
   const [candidateData, setCandidateData] = useState([]);
@@ -108,6 +118,13 @@ const AuditForm = (props) => {
     let data = await response.data;
     console.log('Sample Data', data)
 
+    let dateOfCount = String(data.DateOfCount)
+    dateOfCount = dateOfCount.slice(0,-1)
+
+    let TimeOfCount = String(data.TimeOfCount)
+    TimeOfCount = TimeOfCount.slice(0,-1)
+
+
     const CostOfCount = Number(data.CostOfCount)
     const TotalTime = Number(data.TotalTime)
     const VotingArray = data.VotingEquipmentUsed.split(',');
@@ -120,8 +137,8 @@ const AuditForm = (props) => {
       PrecinctSiteName: data.PrecinctSiteName,
       ContestName: data.ContestName,
       CountyName: data.CountyName,
-      DateOfCount: data.DateOfCount,
-      TimeOfCount: data.TimeOfCount,
+      DateOfCount: dateOfCount,
+      TimeOfCount: TimeOfCount,
       VotingEquipmentUsed: VotingArray,
       HumanOrMachineError: data.HumanOrMachineError,
       DifferenceExplanation: data.DifferenceExplanation,
@@ -229,7 +246,9 @@ const AuditForm = (props) => {
     newFormValidation = !sampleDetail.DateOfCount ? { ...newFormValidation, DateOfCount: true } : newFormValidation;
     newFormValidation = !sampleDetail.TimeOfCount ? { ...newFormValidation, TimeOfCount: true } : newFormValidation;
 
-    newFormValidation = sampleDetail.VotingEquipmentUsed.length === 0 ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+    // newFormValidation = sampleDetail.VotingEquipmentUsed.length === [""] ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+    newFormValidation = sampleDetail.VotingEquipmentUsed[0] === "" ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+
 
     newFormValidation = showExplanation && !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
     newFormValidation = showExplanation && !sampleDetail.DifferenceExplanation ? { ...newFormValidation, DifferenceExplanation: true } : newFormValidation;
@@ -289,10 +308,8 @@ const AuditForm = (props) => {
 
 
     } else {
-      alert("please filled in required cells")
+      alert("Please fill all required cells")
       setFormInfoSubmitted(false)
-
-
 
     }
 
@@ -566,26 +583,39 @@ const AuditForm = (props) => {
     borderColor: 'text.primary',
   };
 
+   
 
-  const confirmAlertModal = () => {
-    console.log('In confirmAlertModal')
+  //for alertDialog
+  const [alertDialog, setAlertDialog ]= useState(false)
 
-    confirmAlert({
-      title: "Your login has expired. Would you like to stay logged in?",
-      message: "You will be log out in 30 seconds",
-      buttons: [
-        {
-          label: "Yes",
-          onClick: () => alert("Click Yes")
-        },
-        {
-          label: "No",
-          onClick: () => alert("Click No")
-        }
-      ]
-    });
+  const handleClickOpen = ()=>{
+    setAlertDialog(true)
+  }
+
+  const handleClose = () => {
+    setAlertDialog(false)
   };
 
+
+  const handleAgree = () => {
+    console.log("I agree!");
+    
+  };
+
+  const handleDisagree = () => {
+    console.log("I do not agree.");
+
+  };
+
+  const renderer = ({   seconds }) => {
+    return (
+      <span>
+      Automatically logout in {seconds} Seconds.
+      </span>
+    )
+  };
+
+  
 
   const clickFunction = () => {
     console.log('sampleDetail', sampleDetail)
@@ -596,12 +626,60 @@ const AuditForm = (props) => {
 
   return (
 
+
+    
     <Grid container className={classes.entireForm} spacing={2} >
+
 
       <Grid container item justifyContent='center' >
         {title}
 
-        <button onClick={clickFunction}> click</button>
+        {/* <button onClick={handleClickOpen}> click</button> */}
+
+        <button onClick={clickFunction}> click2</button>
+
+
+        {/* how to click and show component? */}
+
+        {/* <AlertDialog/> */}
+
+        <Dialog
+        open={alertDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Your login expried."}
+        </DialogTitle>
+
+
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you want to stay login?
+          </DialogContentText>
+
+          <Countdown date={Date.now() + 3000}
+        renderer={renderer}
+        onComplete = {handleClose}
+        >
+       </Countdown>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDisagree} color="primary">
+            Logout
+          </Button>
+          <Button onClick={handleAgree} color="primary" autoFocus>
+            Stay
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
+
+
+
       </Grid>
 
       <Grid container justifyContent='center' spacing={1}>
@@ -828,7 +906,7 @@ const AuditForm = (props) => {
                       </Grid>
 
                       <Grid item xs={4} justifyContent='center'>
-                        <RadioGroup row onChange={handleRadio} >
+                        <RadioGroup row onChange={handleRadio}    value= {String(sampleDetail.HumanOrMachineError)}>
 
                           <FormControlLabel value="Machine" control={<Radio />} label="Machine error" />
                           <FormControlLabel value="Human" control={<Radio />} label="Human error" />
@@ -836,15 +914,23 @@ const AuditForm = (props) => {
                       </Grid>
                     </Grid>
 
+
+
                     <Grid item xs={12} className={classes.textBox}>
+
+                    <Grid item xs={12} className={classes.title}>
+                <Typography className={classes.title}>Detailed explanation of what caused the difference</Typography>
+
+              </Grid>
                       <form noValidate autoComplete="on">
 
                         <TextField
                           id="outlined-multiline-static"
-                          label="Detailed explanation of what caused the difference"
+                          // label="Detailed explanation of what caused the difference"
                           multiline
                           rows={5}
-                          defaultValue=""
+                          value = {sampleDetail.DifferenceExplanation}
+                          defaultValue= ''
                           variant="outlined"
                           onChange={handleExplanation}
                         />
