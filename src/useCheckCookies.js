@@ -5,11 +5,15 @@ const hasCookiesExpired =()=> Cookies.get('userData') === undefined;
 
 const cookieTimeoutId = null;
 
-function cookieTimer() {
+function clearCookiesTimer() {
   if (cookieTimeoutId !== null) {
     clearTimeout(cookieTimeoutId);
     cookieTimeoutId = null;
   }
+}
+
+function cookieTimer() {
+  clearCookiesTimer();
 
   setTimeout(() => {
     if (hasCookiesExpired()) {

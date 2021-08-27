@@ -6,7 +6,7 @@ import {
   Switch,
   Route,
   Link,
-  Redirect
+  useHistory
 } from "react-router-dom";
 
 import "./styles.css";
@@ -14,30 +14,35 @@ import AuditForm from "./AuditForm";
 import LoginPage from "./LoginPage";
 import ChangePassword from "./ChangePassword";
 import Cookies from 'js-cookie';
-import { setLoginCookies } from './loginCookies';
+import { clearCookiesInterval, setLoginCookies } from './loginCookies';
  
 function initUserData (){
   const userDataCookies = Cookies.get('userData')
-
   return userDataCookies === undefined ? {} : JSON.parse(userDataCookies)
+}
+
+function Logout(props) {
+  const history = useHistory();
+  props.onLogout();
+  history.replace('/login');
+  return null;
 }
 
 const App = () => {
   const [userData, setUserData] = useState(initUserData());
 
   console.log('user data',userData)
+
   const handleUserAuthenticated =(userData)=>{
     // console.log(userData);
     setUserData(userData);
     setLoginCookies(userData);
   }
 
-
-
-  const handleLogout = ()=>{
+  const handleLogout = () => {
+    clearCookiesInterval();
     setUserData({});
-    Cookies.remove('userData')
-
+    Cookies.remove('userData');
   }
 
   return (
@@ -52,7 +57,7 @@ const App = () => {
               {userData.IsDefault === "False" && <Link to="/audit-form">Audit Form</Link> }
             </li>
             <li>
-              {userData.IsDefault === "False"? <Link to="/logout" onClick={handleLogout}>Logout</Link>:<Link to="/login">Login</Link>}
+              {userData.IsDefault === "False"? <Link to="/logout">Logout</Link>:<Link to="/login">Login</Link>}
             </li>
             <li>
             <a href='http://localhost:4000/files/User-Manual.docx' download>User-Manual</a>
@@ -66,7 +71,9 @@ const App = () => {
           <Route exact path="/login">
             <LoginPage onUserAuthenticated = {handleUserAuthenticated} />
           </Route>
-          {/* {hasCookiesExpired() && <Redirect to  = "/login" />  } */}
+          <Route exact path="/logout">
+            <Logout onLogout={handleLogout} />
+          </Route>
           <Route path="/change-password">
             <ChangePassword userData = {userData}/>
           </Route>

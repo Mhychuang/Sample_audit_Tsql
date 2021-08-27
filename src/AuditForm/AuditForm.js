@@ -38,8 +38,7 @@ import { useLoginCookiesTimer } from '../loginCookies';
 //moment.tz.setDefault("America/New_York");
 
 const AuditForm = (props) => {
-  // const timer = useLoginCookiesTimer();
-  useLoginCookiesTimer();
+  useLoginCookiesTimer(props.userData);
 
   const emptySampleDetail = {
     CountyId: "",

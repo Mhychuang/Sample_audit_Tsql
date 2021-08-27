@@ -100,6 +100,13 @@ export default function LoginPage(props) {
     if (!password) { alert("please enter password") }
 
 
+    // props.onUserAuthenticated({
+    //   IsDefault: "False",
+    //   CountyId: 1
+    // });
+    // history.push('/audit-form');
+    // return;
+
     const userData = await authenticateUser(email, password);
 
     if (userData === "Email not in the system") {
