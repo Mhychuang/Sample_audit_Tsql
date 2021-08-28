@@ -12,26 +12,24 @@ export function clearCookiesInterval() {
   }
 }
 
-export function useLoginCookiesTimer(userData) {
+export function useLoginCookiesTimer(userData, onOpenAlertDialog) {
   const history = useHistory();
   clearCookiesInterval();
 
   cookieIntervalId = setInterval(() => {
     console.log('timer', Cookies.get('userData'))
     if (hasCookiesExpired()) {
-      if (window.confirm('Your login has expired. Would you like to stay logged in?')) {
-        // extend cookie
-        setLoginCookies(userData);
-      } else {
-        history.replace('/logout');
-      }
+      onOpenAlertDialog();
+      
     }
   }, 2000)
 }
 
 export function setLoginCookies(userData) {
-  const in30Minutes = 1/48
-  // const in30Minutes = 3/86400;
+  //const in30Minutes = 1/48
+  //const in30Minutes = 3/86400;
+  const in30Minutes = 1/2
+   console.log('stay', userData)
   Cookies.set('userData', JSON.stringify(userData), {
       expires: in30Minutes
   });

@@ -7,32 +7,31 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Countdown from 'react-countdown';
+import { useHistory } from "react-router";
+import { setLoginCookies } from "../loginCookies";
 
 
 
 export default function AlertDialog(props){
+    const history = useHistory();
+   
+    const [close, setClose] = useState('true')
 
-
-    const [alertDialog, setAlertDialog ]= useState(false)
-
-    const handleClickOpen = ()=>{
-      setAlertDialog(true)
-    }
+ 
   
-    const handleClose = () => {
-      setAlertDialog(false)
+    const handleLogout = () => {
+        //props.onclose()
+        
+        history.replace('/logout')
     };
   
   
-    const handleAgree = () => {
-      console.log("I agree!");
+    const handleStay = () => {
+        setLoginCookies(props.userData)
+        setClose('false')
       
     };
   
-    const handleDisagree = () => {
-      console.log("I do not agree.");
-  
-    };
   
     const renderer = ({   seconds }) => {
       return (
@@ -46,8 +45,8 @@ export default function AlertDialog(props){
 
 
         <Dialog
-        open={alertDialog}
-        onClose={handleClose}
+        open={props.open}
+        onClose={()=>'true'}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -61,17 +60,17 @@ export default function AlertDialog(props){
             Do you want to stay login?
           </DialogContentText>
 
-          <Countdown date={Date.now() + 3000}
+          <Countdown date={Date.now() + 5000}
         renderer={renderer}
-        onComplete = {handleClose}
+        onComplete = {handleLogout}
         >
        </Countdown>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDisagree} color="primary">
+          <Button onClick={handleLogout} color="primary">
             Logout
           </Button>
-          <Button onClick={handleAgree} color="primary" autoFocus>
+          <Button onClick={props.handleClose} color="primary" autoFocus>
             Stay
           </Button>
         </DialogActions>

@@ -45,8 +45,23 @@ import AlertDialog from '../components/alertDialog'
 
 //moment.tz.setDefault("America/New_York");
 
+
 const AuditForm = (props) => {
-  useLoginCookiesTimer(props.userData);
+  const [alertDialog, setAlertDialog ]= useState(false)
+
+  
+  const handleClickOpen = ()=>{
+
+    setAlertDialog(true)
+  }
+
+  const handleClose = () => {
+    setAlertDialog(false)
+  };
+
+  useLoginCookiesTimer(props.userData, handleClickOpen);
+
+  
 
   const emptySampleDetail = {
     CountyId: "",
@@ -69,6 +84,8 @@ const AuditForm = (props) => {
     // CostOfCount: ""
 
   }
+
+
 
   const [sampleDetail, setSampleDetail] = React.useState({
     ...emptySampleDetail
@@ -246,8 +263,8 @@ const AuditForm = (props) => {
     newFormValidation = !sampleDetail.DateOfCount ? { ...newFormValidation, DateOfCount: true } : newFormValidation;
     newFormValidation = !sampleDetail.TimeOfCount ? { ...newFormValidation, TimeOfCount: true } : newFormValidation;
 
-    // newFormValidation = sampleDetail.VotingEquipmentUsed.length === [""] ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
-    newFormValidation = sampleDetail.VotingEquipmentUsed[0] === "" ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+    newFormValidation = sampleDetail.VotingEquipmentUsed.length === [""] ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
+    //newFormValidation = sampleDetail.VotingEquipmentUsed[0] === "" ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
 
 
     newFormValidation = showExplanation && !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
@@ -585,28 +602,6 @@ const AuditForm = (props) => {
 
    
 
-  //for alertDialog
-  const [alertDialog, setAlertDialog ]= useState(false)
-
-  const handleClickOpen = ()=>{
-    setAlertDialog(true)
-  }
-
-  const handleClose = () => {
-    setAlertDialog(false)
-  };
-
-
-  const handleAgree = () => {
-    console.log("I agree!");
-    
-  };
-
-  const handleDisagree = () => {
-    console.log("I do not agree.");
-
-  };
-
   const renderer = ({   seconds }) => {
     return (
       <span>
@@ -636,48 +631,14 @@ const AuditForm = (props) => {
 
         {/* <button onClick={handleClickOpen}> click</button> */}
 
-        <button onClick={clickFunction}> click2</button>
-
-
-        {/* how to click and show component? */}
-
-        {/* <AlertDialog/> */}
-
-        <Dialog
-        open={alertDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Your login expried."}
-        </DialogTitle>
-
-
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Do you want to stay login?
-          </DialogContentText>
-
-          <Countdown date={Date.now() + 3000}
-        renderer={renderer}
-        onComplete = {handleClose}
-        >
-       </Countdown>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDisagree} color="primary">
-            Logout
-          </Button>
-          <Button onClick={handleAgree} color="primary" autoFocus>
-            Stay
-          </Button>
-        </DialogActions>
-      </Dialog>
+        {/* <button onClick={clickFunction}> click2</button> */}
 
 
 
 
+        <AlertDialog open = {alertDialog} userData = {props.userData} handleClose ={handleClose} />
+
+        
 
 
       </Grid>
