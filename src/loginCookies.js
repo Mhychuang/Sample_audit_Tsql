@@ -29,7 +29,7 @@ export function setLoginCookies(userData) {
   //const in30Minutes = 1/48
   //const in30Minutes = 3/86400;
   const in30Minutes = 1/2
-   console.log('stay', userData)
+  console.log('stay', userData)
   Cookies.set('userData', JSON.stringify(userData), {
       expires: in30Minutes
   });

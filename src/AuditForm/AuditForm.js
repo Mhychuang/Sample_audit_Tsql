@@ -43,7 +43,10 @@ import SimplePaper from '../components/simplePaper';
 import { useLoginCookiesTimer } from '../loginCookies';
 import AlertDialog from '../components/alertDialog'
 
-//moment.tz.setDefault("America/New_York");
+
+//domain
+//const domain = 'http://localhost:4000'
+const domain = 'https://sampleaudit.ncsbe.gov'
 
 
 const AuditForm = (props) => {
@@ -74,8 +77,8 @@ const AuditForm = (props) => {
     CandidateName1: "",
     CandidateName2: "",
     //to update
-    // DateOfCount: null,
-    // TimeOfCount: null,//Date.now(),
+    //DateOfCount: new Date(),
+    //TimeOfCount: new Date(),
     // VotingEquipmentUsed: [],
     // HumanOrMachineError: "",
     // DifferenceExplanation: "",
@@ -126,20 +129,45 @@ const AuditForm = (props) => {
 
   })
 
-
-
+  //https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${sampleId}
+  //https://sampleaudit.ncsbe.gov/files/User-Manual.docx
   const getdataByCountyandsample = async (countyId, sampleId) => {
     const response = await axios.get(
-      `http://localhost:4000/sampleAudit/getDetailByCountySampleId/${countyId}/${sampleId}`
+      `https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${sampleId}`
     );
     let data = await response.data;
-    console.log('Sample Data', data)
 
-    let dateOfCount = String(data.DateOfCount)
-    dateOfCount = dateOfCount.slice(0,-1)
+    let newDateOfCount = String(new Date())
+    let newTimeOfCount = String(new Date())
 
-    let TimeOfCount = String(data.TimeOfCount)
-    TimeOfCount = TimeOfCount.slice(0,-1)
+    if (data.DateOfCount == undefined || data.DateOfCount == null){
+      //console.log ('Not in DB', data.DateOfCount)
+      
+      //dateOfCount = dateOfCount.slice(0,-1)
+      //console.log(newDateOfCount)
+
+    }else{
+      //console.log ('Yes', data.DateOfCount)
+      newDateOfCount = String(data.DateOfCount)
+      newDateOfCount = newDateOfCount.slice(0,-1)
+    
+    }
+
+
+    if (data.TimeOfCount == undefined || data.TimeOfCount == null){
+      //console.log ('Not in DB', data.TimeOfCount)
+      
+      //TimeOfCount = TimeOfCount.slice(0,-1)
+      //console.log(newTimeOfCount)
+
+    }else{
+      //console.log ('Yes', data.TimeOfCount)
+      newTimeOfCount = String(data.TimeOfCount)
+      newTimeOfCount = newTimeOfCount.slice(0,-1)
+    
+    }
+    
+
 
 
     const CostOfCount = Number(data.CostOfCount)
@@ -154,8 +182,8 @@ const AuditForm = (props) => {
       PrecinctSiteName: data.PrecinctSiteName,
       ContestName: data.ContestName,
       CountyName: data.CountyName,
-      DateOfCount: dateOfCount,
-      TimeOfCount: TimeOfCount,
+      DateOfCount: newDateOfCount,
+      TimeOfCount: newTimeOfCount,
       VotingEquipmentUsed: VotingArray,
       HumanOrMachineError: data.HumanOrMachineError,
       DifferenceExplanation: data.DifferenceExplanation,
@@ -176,45 +204,44 @@ const AuditForm = (props) => {
 
   const getCandidateByCountyandsample = async (countyId, sampleId) => {
     try {
-      const response = await axios.get(`http://localhost:4000/sampleAudit/getCandidateByCountySampleId/${countyId}/${sampleId}`);
+      const response = await axios.get(`https://sampleaudit.ncsbe.gov/sampleAudit/getCandidateByCountySampleId/${countyId}/${sampleId}`);
       let data = await response.data;
       setCandidateData(data);
     } catch (error) {
-      console.error(error)
+      //console.error(error)
     }
   };
 
 
   const updateCandidate = async (newData, canId, putbody) => {
-    console.log('putbody', putbody)
-    console.log('canId', canId)
-    const res = await axios.put(`http://localhost:4000/sampleAudit/updateCandidate`, putbody);
+    //console.log('putbody', putbody)
+    //console.log('canId', canId)
+    const res = await axios.put(`https://sampleaudit.ncsbe.gov/sampleAudit/updateCandidate`, putbody);
     // console.log(newData)
     // console.log(candidateData)
     let updateData = [...candidateData]
-    console.log('updateData', updateData)
-    console.log('newData', newData)
     let objIndex = updateData.findIndex((obj => obj.SampleCandidateId == newData.SampleCandidateId));
     updateData[objIndex].CandidateName = newData.CandidateName
     updateData[objIndex].Machine = parseInt(newData.Machine)
     updateData[objIndex].HandToEye = parseInt(newData.HandToEye)
     updateData[objIndex].DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
     setCandidateData(updateData)
-    console.log('candidate update name', updateData)
-
   }
 
   const updateSample = async (CountyId, SampleID, putbody) => {
-    //console.log('updatFunction', putbody);
-    const res = await axios.put(`http://localhost:4000/sampleAudit/updateSample`, putbody);
+    //const res = await axios.put(`https://sampleaudit.ncsbe.gov/sampleAudit/updateSample`, putbody);
+    //http://localhost:4000/sampleAudit/updateSample
+    //console.log(`${domain}/sampleAudit/updateSample`)
+    
+    let uri = `${domain}/sampleAudit/updateSample`
+    const res = await axios.put(`${domain}/sampleAudit/updateSample`, putbody);
+                                
   }
 
 
 
   const hasError = () => {
     let showError = false
-    // console.log('formValidation', formValidation)
-    // console.log('SampleDetailTrueorNot', !sampleDetail.DateOfCount)
     //showExplanation
     if (showExplanation) {
 
@@ -255,18 +282,11 @@ const AuditForm = (props) => {
 
   const handleSubmit = (e) => {
 
-    //some issues here
-
     let newFormValidation = { ...formValidation };
 
-
-    newFormValidation = !sampleDetail.DateOfCount ? { ...newFormValidation, DateOfCount: true } : newFormValidation;
-    newFormValidation = !sampleDetail.TimeOfCount ? { ...newFormValidation, TimeOfCount: true } : newFormValidation;
-
-    newFormValidation = sampleDetail.VotingEquipmentUsed.length === [""] ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
-    //newFormValidation = sampleDetail.VotingEquipmentUsed[0] === "" ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
-
-
+    //newFormValidation = !sampleDetail.DateOfCount ? { ...newFormValidation, DateOfCount: true } : newFormValidation;
+    //newFormValidation = !sampleDetail.TimeOfCount ? { ...newFormValidation, TimeOfCount: true } : newFormValidation;
+    newFormValidation = sampleDetail.VotingEquipmentUsed.length === 1 ? { ...newFormValidation, VotingEquipmentUsed: true } : newFormValidation;
     newFormValidation = showExplanation && !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
     newFormValidation = showExplanation && !sampleDetail.DifferenceExplanation ? { ...newFormValidation, DifferenceExplanation: true } : newFormValidation;
     newFormValidation = !sampleDetail.PeoplePartyCounting ? { ...newFormValidation, PeoplePartyCounting: true } : newFormValidation;
@@ -284,8 +304,8 @@ const AuditForm = (props) => {
     // if sampleDetail.DateOfCount 
 
     //loop throuh every properties in the obj
-
-    console.log(newFormValidation)
+    //console.log('sampleDetail', sampleDetail)
+    //console.log('validation object', newFormValidation)
     let trueCount = 0
 
     for (var key in newFormValidation) {
@@ -294,38 +314,34 @@ const AuditForm = (props) => {
       }
     }
 
-    console.log('before submit date', sampleDetail.DateOfCount)
-
-    console.log('before submit time', sampleDetail.TimeOfCount)
-
-    // didn't get the most recent formValidation
-    //console.log(sampleDetail.TimeOfCount)
-
-    //use newFormValidation
-
-
-
     //trueCount== 0
     if (trueCount == 0) {
-      console.log(sampleDetail.SampleID)
+      //console.log(sampleDetail.SampleID)
       var labeltochange = 'label' + sampleDetail.SampleID + "Color"
-      console.log(labeltochange)
+      //console.log(labeltochange)
       //use square bracket we can pass in string 
       setLabel({ ...label, [labeltochange]: "success.main" })
 
+
+
       updateSample(sampleDetail.CountyId, sampleDetail.SampleID, sampleDetail)
         .then(response => {
-          console.log(response)
+          //console.log(response)
           setFormInfoSubmitted(false);
         })
         .catch(error => {
-          console.log(error)
+          //console.log(error)
         })
 
+        let message = "Sample " + sampleDetail.SampleID + " submitted"
+      
+        alert(message)
 
 
     } else {
       alert("Please fill all required cells")
+     
+      
       setFormInfoSubmitted(false)
 
     }
@@ -368,7 +384,14 @@ const AuditForm = (props) => {
 
   const handleDateChange = (date) => {
 
-    console.log('data of count', date)
+    // newDateOfCount = String(data.DateOfCount)
+    // newDateOfCount = newDateOfCount.slice(0,-1)
+
+
+    date = String(date)
+    date = date.slice(0,-1)
+
+    //console.log('data of count', date)
 
     setSampleDetail({
       ...sampleDetail,
@@ -380,11 +403,11 @@ const AuditForm = (props) => {
 
   const handleTimeChange = (time) => {
 
-    console.log('OG time of count', time)
+    //console.log('OG time of count', time)
 
     //console.log('dateChange', date)
     const NewTime = time.toLocaleString('en-US', { timeZone: 'America/New_York' })
-    console.log('NewTime', NewTime)
+    //console.log('NewTime', NewTime)
 
 
 
@@ -443,6 +466,8 @@ const AuditForm = (props) => {
       HumanOrMachineError: e.target.value
     })
 
+    setFormValidation({ ...formValidation, HumanOrMachineError: false })
+
   }
 
 
@@ -458,7 +483,7 @@ const AuditForm = (props) => {
   }
 
   const handlePeople = (e) => {
-    console.log(e.target.value)
+    console.log('people value', e.target.value)
     setFormValidation({ ...formValidation, PeoplePartyCounting: false })
     setSampleDetail({
       ...sampleDetail,
@@ -474,8 +499,8 @@ const AuditForm = (props) => {
     hasDifference ? setShowExplanation(true) : setShowExplanation(false)
 
 
-    console.log('showExplanation', showExplanation)
-    console.log('candidate data', candidateData)
+    //console.log('showExplanation', showExplanation)
+    //console.log('candidate data', candidateData)
 
   }, [candidateData]);
 
@@ -613,8 +638,9 @@ const AuditForm = (props) => {
   
 
   const clickFunction = () => {
-    console.log('sampleDetail', sampleDetail)
+    console.log('sampleDetail Clicked', sampleDetail)
     console.log('candidateData', candidateData)
+    
     //console.log('sampleDetail.CostOfCount', sampleDetail.CostOfCount)
   }
 
@@ -815,16 +841,16 @@ const AuditForm = (props) => {
                       "HandToEye": newData.HandToEye,
                       "DifferenceInCount": DifferenceInCount
                     }
-                    console.log(putbody);
+                    //console.log(putbody);
                     //Promise.then() takes two arguments, a callback for success and another for failure.
                     //Both are optional, so you can add a callback for success or failure only.
                     // here response can be any word 
                     updateCandidate(newData, canId, putbody).then(response => {
-                      console.log(response)
+                      //console.log(response)
                       resolve()
                     });
 
-                    // axios.put(`http://localhost:4000/updateCandidate/${canId}`, putbody)
+                    // axios.put(`https://sampleaudit.ncsbe.gov/updateCandidate/${canId}`, putbody)
                     // .then((response, rejct) => {
                     //   let updateDate = candidateData
                     //   let objIndex = updateDate.findIndex(( obj => obj.CandidateId == newData.CandidateId));     

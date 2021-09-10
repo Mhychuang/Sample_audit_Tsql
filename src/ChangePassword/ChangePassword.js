@@ -50,12 +50,13 @@ const useStyles = makeStyles((theme) => ({
 
 
 const updatePassword = async (webUserId, password) => {
-  //console.log('updatFunction', putbody);
+  
   let putbody = {
     "WebUserId": webUserId,
     "UserPassword": password
   }
-  const res = await axios.put(`http://localhost:4000/auth/updateWebUser`, putbody);
+  //console.log('updatFunction', putbody);
+  const res = await axios.put(`https://sampleaudit.ncsbe.gov/auth/updateWebUser`, putbody);
 }
 
 

@@ -1,12 +1,13 @@
 import React from "react";
 import { useState } from "react";
-
+//BrowserRouter as Router,
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Switch,
   Route,
   Link,
-  useHistory
+  useHistory,
+
 } from "react-router-dom";
 
 import "./styles.css";
@@ -46,7 +47,7 @@ const App = () => {
   }
 
   return (
-    <Router>   
+    <Router>
       <div>
         <nav>
           <ul>
@@ -60,13 +61,14 @@ const App = () => {
               {userData.IsDefault === "False"? <Link to="/logout">Logout</Link>:<Link to="/login">Login</Link>}
             </li>
             <li>
-            <a href='http://localhost:4000/files/User-Manual.docx' download>User-Manual</a>
+            <a href='https://sampleaudit.ncsbe.gov/files/User-Manual.docx' download>User-Manual</a>
             </li>
           </ul>
         </nav>
 
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
+         
         <Switch>
           <Route exact path="/login">
             <LoginPage onUserAuthenticated = {handleUserAuthenticated} />
@@ -84,10 +86,15 @@ const App = () => {
             <LoginPage onUserAuthenticated = {handleUserAuthenticated} />
           </Route>
         </Switch>
+     
+       
 
       </div>
+      </Router>
+
+      
     
-   </Router>
+
 
 
 
