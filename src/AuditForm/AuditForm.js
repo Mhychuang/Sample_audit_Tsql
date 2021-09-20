@@ -3,10 +3,11 @@ import { useState } from "react";
 import axios from "axios";
 import MaterialTable from "material-table";
 import { Grid, Button, Fade } from "@material-ui/core";
+import { alpha } from '@material-ui/core/styles'
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { forwardRef } from 'react';
-import Edit from '@material-ui/icons/Edit';
+//import Edit from '@material-ui/icons/Edit';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -21,7 +22,11 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from "@material-ui/core/Collapse";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
+import { env } from "../variables";
+import { addCandidate } from "./api";
 
+
+import { AddBox, Edit } from "@material-ui/icons";
 //import moment from 'moment-timezone';
 
 //for dialog
@@ -44,17 +49,12 @@ import { useLoginCookiesTimer } from '../loginCookies';
 import AlertDialog from '../components/alertDialog'
 
 
-//domain
-//const domain = 'http://localhost:4000'
-const domain = 'https://sampleaudit.ncsbe.gov'
-
 
 const AuditForm = (props) => {
-  const [alertDialog, setAlertDialog ]= useState(false)
+  const [alertDialog, setAlertDialog] = useState(false)
 
-  
-  const handleClickOpen = ()=>{
 
+  const handleClickOpen = () => {
     setAlertDialog(true)
   }
 
@@ -64,11 +64,11 @@ const AuditForm = (props) => {
 
   useLoginCookiesTimer(props.userData, handleClickOpen);
 
-  
+
 
   const emptySampleDetail = {
     CountyId: "",
-    SampleID: "",
+    SampleId: "",
     ElectionDate: "",
     CountyName: "",
     ContestName: "",
@@ -110,7 +110,7 @@ const AuditForm = (props) => {
 
   })
 
-//  const [radioValue, setRadioValue] = useState('Human')
+  //  const [radioValue, setRadioValue] = useState('Human')
 
   const [selectedSampleId, setSelectedSampleId] = useState('');
 
@@ -129,54 +129,49 @@ const AuditForm = (props) => {
 
   })
 
-  //https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${sampleId}
+  //https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${SampleId}
   //https://sampleaudit.ncsbe.gov/files/User-Manual.docx
-  const getdataByCountyandsample = async (countyId, sampleId) => {
+  const getdataByCountyandsample = async (countyId, SampleId) => {
     const response = await axios.get(
-      `https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${sampleId}`
+      `https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${SampleId}`
     );
     let data = await response.data;
 
     let newDateOfCount = String(new Date())
     let newTimeOfCount = String(new Date())
 
-    if (data.DateOfCount == undefined || data.DateOfCount == null){
+    if (data.DateOfCount == undefined || data.DateOfCount == null) {
       //console.log ('Not in DB', data.DateOfCount)
-      
       //dateOfCount = dateOfCount.slice(0,-1)
       //console.log(newDateOfCount)
 
-    }else{
+    } else {
       //console.log ('Yes', data.DateOfCount)
       newDateOfCount = String(data.DateOfCount)
-      newDateOfCount = newDateOfCount.slice(0,-1)
-    
+      newDateOfCount = newDateOfCount.slice(0, -1)
+
     }
 
 
-    if (data.TimeOfCount == undefined || data.TimeOfCount == null){
+    if (data.TimeOfCount == undefined || data.TimeOfCount == null) {
       //console.log ('Not in DB', data.TimeOfCount)
-      
       //TimeOfCount = TimeOfCount.slice(0,-1)
       //console.log(newTimeOfCount)
 
-    }else{
+    } else {
       //console.log ('Yes', data.TimeOfCount)
       newTimeOfCount = String(data.TimeOfCount)
-      newTimeOfCount = newTimeOfCount.slice(0,-1)
-    
+      newTimeOfCount = newTimeOfCount.slice(0, -1)
+
     }
-    
-
-
-
     const CostOfCount = Number(data.CostOfCount)
     const TotalTime = Number(data.TotalTime)
     const VotingArray = data.VotingEquipmentUsed.split(',');
+    
     setSampleDetail({
       ...sampleDetail,
       CountyId: countyId,
-      SampleID: data.SampleId.toString(),
+      SampleId: data.SampleId.toString(),
       ElectionDate: data.ElectionDate,
       TypeOfSample: data.TypeOfSample,
       PrecinctSiteName: data.PrecinctSiteName,
@@ -195,18 +190,21 @@ const AuditForm = (props) => {
 
   const handleRadioButton = (e) => {
     let CountyId = sampleDetail.CountyId
-    let sampleId = e.target.value
-    getdataByCountyandsample(CountyId, sampleId)
-    getCandidateByCountyandsample(CountyId, sampleId);
+    let SampleId = e.target.value
+    getdataByCountyandsample(CountyId, SampleId)
+    getCandidateByCountyandsample(CountyId, SampleId);
   }
 
 
 
-  const getCandidateByCountyandsample = async (countyId, sampleId) => {
+  const getCandidateByCountyandsample = async (countyId, SampleId) => {
     try {
-      const response = await axios.get(`https://sampleaudit.ncsbe.gov/sampleAudit/getCandidateByCountySampleId/${countyId}/${sampleId}`);
+      const response = await axios.get(`https://sampleaudit.ncsbe.gov/sampleAudit/getCandidateByCountySampleId/${countyId}/${SampleId}`);
       let data = await response.data;
+
+      console.log('CandidateData', data)
       setCandidateData(data);
+      return true
     } catch (error) {
       //console.error(error)
     }
@@ -228,14 +226,28 @@ const AuditForm = (props) => {
     setCandidateData(updateData)
   }
 
-  const updateSample = async (CountyId, SampleID, putbody) => {
+
+
+
+
+  const deleteCandidate = async (SampleCandidateId) => {
+    //const res = await axios.post(`${process.env.NODE_ENV}addCandidate`, putbody);
+    console.log("In Delete Candidate", `${env.apiUrl}deleteCandidate/${SampleCandidateId}`)
+
+    const res = await axios.delete(`${env.apiUrl}deleteCandidate/${SampleCandidateId}`);
+    console.log(res)
+    return res
+
+  }
+
+  const updateSample = async (CountyId, SampleId, putbody) => {
     //const res = await axios.put(`https://sampleaudit.ncsbe.gov/sampleAudit/updateSample`, putbody);
     //http://localhost:4000/sampleAudit/updateSample
     //console.log(`${domain}/sampleAudit/updateSample`)
-    
+
     let uri = `${domain}/sampleAudit/updateSample`
     const res = await axios.put(`${domain}/sampleAudit/updateSample`, putbody);
-                                
+
   }
 
 
@@ -316,15 +328,15 @@ const AuditForm = (props) => {
 
     //trueCount== 0
     if (trueCount == 0) {
-      //console.log(sampleDetail.SampleID)
-      var labeltochange = 'label' + sampleDetail.SampleID + "Color"
+      //console.log(sampleDetail.SampleId)
+      var labeltochange = 'label' + sampleDetail.SampleId + "Color"
       //console.log(labeltochange)
       //use square bracket we can pass in string 
       setLabel({ ...label, [labeltochange]: "success.main" })
 
 
 
-      updateSample(sampleDetail.CountyId, sampleDetail.SampleID, sampleDetail)
+      updateSample(sampleDetail.CountyId, sampleDetail.SampleId, sampleDetail)
         .then(response => {
           //console.log(response)
           setFormInfoSubmitted(false);
@@ -333,15 +345,15 @@ const AuditForm = (props) => {
           //console.log(error)
         })
 
-        let message = "Sample " + sampleDetail.SampleID + " submitted"
-      
-        alert(message)
+      let message = "Sample " + sampleDetail.SampleId + " submitted"
+
+      alert(message)
 
 
     } else {
       alert("Please fill all required cells")
-     
-      
+
+
       setFormInfoSubmitted(false)
 
     }
@@ -376,9 +388,10 @@ const AuditForm = (props) => {
     }]
 
   const tableIcons = {
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Check: forwardRef((props: any, ref: any) => <Check {...props} ref={ref} />),
+    // Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),   
+    // Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    // Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    // Check: forwardRef((props: any, ref: any) => <Check {...props} ref={ref} />),
 
   }
 
@@ -389,7 +402,7 @@ const AuditForm = (props) => {
 
 
     date = String(date)
-    date = date.slice(0,-1)
+    date = date.slice(0, -1)
 
     //console.log('data of count', date)
 
@@ -499,9 +512,6 @@ const AuditForm = (props) => {
     hasDifference ? setShowExplanation(true) : setShowExplanation(false)
 
 
-    //console.log('showExplanation', showExplanation)
-    //console.log('candidate data', candidateData)
-
   }, [candidateData]);
 
 
@@ -510,10 +520,11 @@ const AuditForm = (props) => {
 
     console.log(props.userData.CountyId)
     let countyID = props.userData.CountyId;
-    let SampleID = 1
-    getdataByCountyandsample(countyID, SampleID);
-    getCandidateByCountyandsample(countyID, SampleID);
-    console.log(sampleDetail.sampleId)
+    let SampleId = 1
+    getdataByCountyandsample(countyID, SampleId);
+    getCandidateByCountyandsample(countyID, SampleId);
+    console.log(sampleDetail.SampleId)
+    alert(env.apiUrl)
 
   }, []);
 
@@ -625,22 +636,24 @@ const AuditForm = (props) => {
     borderColor: 'text.primary',
   };
 
-   
 
-  const renderer = ({   seconds }) => {
+
+  const renderer = ({ seconds }) => {
     return (
       <span>
-      Automatically logout in {seconds} Seconds.
+        Automatically logout in {seconds} Seconds.
       </span>
     )
   };
 
-  
+
 
   const clickFunction = () => {
-    console.log('sampleDetail Clicked', sampleDetail)
+    console.log('API URL', `${process.env.REACT_APP_API}addCandidate`)
+
+    // console.log('sampleDetail Clicked', sampleDetail)
     console.log('candidateData', candidateData)
-    
+
     //console.log('sampleDetail.CostOfCount', sampleDetail.CostOfCount)
   }
 
@@ -648,7 +661,7 @@ const AuditForm = (props) => {
   return (
 
 
-    
+
     <Grid container className={classes.entireForm} spacing={2} >
 
 
@@ -657,14 +670,14 @@ const AuditForm = (props) => {
 
         {/* <button onClick={handleClickOpen}> click</button> */}
 
-        {/* <button onClick={clickFunction}> click2</button> */}
+        <button onClick={clickFunction}> click2</button>
 
 
 
 
-        <AlertDialog open = {alertDialog} userData = {props.userData} handleClose ={handleClose} />
+        <AlertDialog open={alertDialog} userData={props.userData} handleClose={handleClose} />
 
-        
+
 
 
       </Grid>
@@ -673,8 +686,8 @@ const AuditForm = (props) => {
         {/* <FormControl component="fieldset"> */}
         {/* <FormLabel component="legend">Sample</FormLabel> */}
         {/* <Grid item xs={3}>Sample</Grid> */}
-        {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.sampleId} onChange={handleRadioButton}> */}
-        <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleID} onChange={handleRadioButton} row>
+        {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleId} onChange={handleRadioButton}> */}
+        <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleId} onChange={handleRadioButton} row>
           {/* <Grid item ><FormControlLabel value='1' control={<Radio />} label="Sample One" /></Grid> */}
           <Box border={3} borderColor={label.label1Color} borderRadius={16} component="span" m={1} p={0} pr={1} pl={1}>
             <FormControlLabel value='1' control={<Radio />} label={<span style={{ fontSize: '120%' }}>Sample One</span>} />
@@ -811,7 +824,7 @@ const AuditForm = (props) => {
                   : "Enter counts for each candidates"}
                 columns={columns}
                 data={candidateData}
-                icons={tableIcons}
+                // icons={tableIcons} //table icons are imported in index.html
 
                 options={{
                   search: false,
@@ -824,6 +837,34 @@ const AuditForm = (props) => {
                 style={formValidation.CandidatesCounts && { border: '2px solid red' }}
 
                 editable={{
+
+                  onRowAdd: (newData) => 
+                    new Promise((resolve, reject) => {
+                      let DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
+
+                      console.log(sampleDetail)
+
+                      let postBody = {
+                        "CountyId": sampleDetail.CountyId,
+                        "SampleId": sampleDetail.SampleId,
+                        "CandidateName": newData.CandidateName,
+                        "Machine": newData.Machine,
+                        "HandToEye": newData.HandToEye,
+                        "DifferenceInCount": DifferenceInCount
+                      }
+                      addCandidate(postBody).then(response => {
+                        console.log(response)
+                        getCandidateByCountyandsample(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
+                          resolve()
+
+                        })
+                        
+                      });
+
+
+                    }),
+                      
+
                   onRowUpdate: (newData, oldData) => new Promise((resolve, reject) => {
 
                     setFormValidation({ ...formValidation, CandidatesCounts: false })
@@ -841,6 +882,7 @@ const AuditForm = (props) => {
                       "HandToEye": newData.HandToEye,
                       "DifferenceInCount": DifferenceInCount
                     }
+
                     //console.log(putbody);
                     //Promise.then() takes two arguments, a callback for success and another for failure.
                     //Both are optional, so you can add a callback for success or failure only.
@@ -867,6 +909,27 @@ const AuditForm = (props) => {
 
                     // //resolve()
                   }),
+
+                  onRowDelete: oldData =>
+                    new Promise(resolve => {
+                      let SampleCandidateId = oldData.SampleCandidateId
+                      console.log(SampleCandidateId)
+
+                      deleteCandidate(SampleCandidateId).then(response => {
+                        console.log('oldData', oldData)
+                        console.log('sampleDetail.CountyId', sampleDetail.CountyId)
+
+                        getCandidateByCountyandsample(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
+                          resolve()
+                        })
+
+                        
+                      })
+
+
+                    }),
+
+
                 }}
               />
             </Grid>
@@ -893,7 +956,7 @@ const AuditForm = (props) => {
                       </Grid>
 
                       <Grid item xs={4} justifyContent='center'>
-                        <RadioGroup row onChange={handleRadio}    value= {String(sampleDetail.HumanOrMachineError)}>
+                        <RadioGroup row onChange={handleRadio} value={String(sampleDetail.HumanOrMachineError)}>
 
                           <FormControlLabel value="Machine" control={<Radio />} label="Machine error" />
                           <FormControlLabel value="Human" control={<Radio />} label="Human error" />
@@ -905,10 +968,10 @@ const AuditForm = (props) => {
 
                     <Grid item xs={12} className={classes.textBox}>
 
-                    <Grid item xs={12} className={classes.title}>
-                <Typography className={classes.title}>Detailed explanation of what caused the difference</Typography>
+                      <Grid item xs={12} className={classes.title}>
+                        <Typography className={classes.title}>Detailed explanation of what caused the difference</Typography>
 
-              </Grid>
+                      </Grid>
                       <form noValidate autoComplete="on">
 
                         <TextField
@@ -916,8 +979,8 @@ const AuditForm = (props) => {
                           // label="Detailed explanation of what caused the difference"
                           multiline
                           rows={5}
-                          value = {sampleDetail.DifferenceExplanation}
-                          defaultValue= ''
+                          value={sampleDetail.DifferenceExplanation}
+                          defaultValue=''
                           variant="outlined"
                           onChange={handleExplanation}
                         />
