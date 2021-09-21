@@ -23,7 +23,7 @@ import Collapse from "@material-ui/core/Collapse";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { env } from "../variables";
-import { addCandidate } from "./api";
+import { addCandidate, getdataByCountyandsample, getCandidateByCountyandsample } from "./api";
 
 
 import { AddBox, Edit } from "@material-ui/icons";
@@ -129,86 +129,77 @@ const AuditForm = (props) => {
 
   })
 
-  //https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${SampleId}
-  //https://sampleaudit.ncsbe.gov/files/User-Manual.docx
-  const getdataByCountyandsample = async (countyId, SampleId) => {
-    const response = await axios.get(
-      `https://sampleaudit.ncsbe.gov/sampleAudit/getDetailByCountySampleId/${countyId}/${SampleId}`
-    );
-    let data = await response.data;
+ 
+  const getdataByCountyandsampleHandler = async (countyId, SampleId) => {
+    let response = await getdataByCountyandsample(countyId, SampleId)
+    // setSampleDetail({
+    //   ...sampleDetail,
+    //   CountyId: countyId,
+    //   SampleId: data.SampleId.toString(),
+    //   ElectionDate: data.ElectionDate,
+    //   TypeOfSample: data.TypeOfSample,
+    //   PrecinctSiteName: data.PrecinctSiteName,
+    //   ContestName: data.ContestName,
+    //   CountyName: data.CountyName,
+    //   DateOfCount: newDateOfCount,
+    //   TimeOfCount: newTimeOfCount,
+    //   VotingEquipmentUsed: VotingArray,
+    //   HumanOrMachineError: data.HumanOrMachineError,
+    //   DifferenceExplanation: data.DifferenceExplanation,
+    //   PeoplePartyCounting: data.PeoplePartyCounting,
+    //   TotalTime: TotalTime,
+    //   CostOfCount: CostOfCount
+    // });
 
-    let newDateOfCount = String(new Date())
-    let newTimeOfCount = String(new Date())
-
-    if (data.DateOfCount == undefined || data.DateOfCount == null) {
-      //console.log ('Not in DB', data.DateOfCount)
-      //dateOfCount = dateOfCount.slice(0,-1)
-      //console.log(newDateOfCount)
-
-    } else {
-      //console.log ('Yes', data.DateOfCount)
-      newDateOfCount = String(data.DateOfCount)
-      newDateOfCount = newDateOfCount.slice(0, -1)
-
-    }
-
-
-    if (data.TimeOfCount == undefined || data.TimeOfCount == null) {
-      //console.log ('Not in DB', data.TimeOfCount)
-      //TimeOfCount = TimeOfCount.slice(0,-1)
-      //console.log(newTimeOfCount)
-
-    } else {
-      //console.log ('Yes', data.TimeOfCount)
-      newTimeOfCount = String(data.TimeOfCount)
-      newTimeOfCount = newTimeOfCount.slice(0, -1)
-
-    }
-    const CostOfCount = Number(data.CostOfCount)
-    const TotalTime = Number(data.TotalTime)
-    const VotingArray = data.VotingEquipmentUsed.split(',');
-    
     setSampleDetail({
       ...sampleDetail,
-      CountyId: countyId,
-      SampleId: data.SampleId.toString(),
-      ElectionDate: data.ElectionDate,
-      TypeOfSample: data.TypeOfSample,
-      PrecinctSiteName: data.PrecinctSiteName,
-      ContestName: data.ContestName,
-      CountyName: data.CountyName,
-      DateOfCount: newDateOfCount,
-      TimeOfCount: newTimeOfCount,
-      VotingEquipmentUsed: VotingArray,
-      HumanOrMachineError: data.HumanOrMachineError,
-      DifferenceExplanation: data.DifferenceExplanation,
-      PeoplePartyCounting: data.PeoplePartyCounting,
-      TotalTime: TotalTime,
-      CostOfCount: CostOfCount
+      ...response
+
     });
+  };
+
+
+  const getCandidateByCountyandsampleHandler = async (countyId, SampleId) => {
+    let data = await getCandidateByCountyandsample(countyId, SampleId)
+    setCandidateData(data);
+  };
+
+  const handleReset = async () => {
+    
+    let r = window.confirm("Are you sure you want to reset the table?\n All edited data will be lost!");
+
+    let postBody = {
+      "countyId":sampleDetail.CountyId, 
+      "sampleId":sampleDetail.SampleId
+      }
+
+    
+
+    if (r == true) {
+      const res = await axios.post(`${env.apiUrl}sampleAudit/getDefaultCandidateByCountySampleId`, postBody);
+
+      console.log('executed the stored procedures', res)
+
+      getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId)
+
+
+
+      alert('Table Reset Please edit again')
+    } else {
+      
+    }
+
+    
+    //alert('delete')
+
   };
 
   const handleRadioButton = (e) => {
     let CountyId = sampleDetail.CountyId
     let SampleId = e.target.value
-    getdataByCountyandsample(CountyId, SampleId)
-    getCandidateByCountyandsample(CountyId, SampleId);
+    getdataByCountyandsampleHandler(CountyId, SampleId)
+    getCandidateByCountyandsampleHandler(CountyId, SampleId);
   }
-
-
-
-  const getCandidateByCountyandsample = async (countyId, SampleId) => {
-    try {
-      const response = await axios.get(`https://sampleaudit.ncsbe.gov/sampleAudit/getCandidateByCountySampleId/${countyId}/${SampleId}`);
-      let data = await response.data;
-
-      console.log('CandidateData', data)
-      setCandidateData(data);
-      return true
-    } catch (error) {
-      //console.error(error)
-    }
-  };
 
 
   const updateCandidate = async (newData, canId, putbody) => {
@@ -228,25 +219,19 @@ const AuditForm = (props) => {
 
 
 
-
-
   const deleteCandidate = async (SampleCandidateId) => {
     //const res = await axios.post(`${process.env.NODE_ENV}addCandidate`, putbody);
-    console.log("In Delete Candidate", `${env.apiUrl}deleteCandidate/${SampleCandidateId}`)
+    console.log("In Delete Candidate", `${env.apiUrl}sampleAudit/deleteCandidate/${SampleCandidateId}`)
 
-    const res = await axios.delete(`${env.apiUrl}deleteCandidate/${SampleCandidateId}`);
+    const res = await axios.delete(`${env.apiUrl}sampleAudit/deleteCandidate/${SampleCandidateId}`);
     console.log(res)
     return res
 
   }
 
   const updateSample = async (CountyId, SampleId, putbody) => {
-    //const res = await axios.put(`https://sampleaudit.ncsbe.gov/sampleAudit/updateSample`, putbody);
-    //http://localhost:4000/sampleAudit/updateSample
-    //console.log(`${domain}/sampleAudit/updateSample`)
-
-    let uri = `${domain}/sampleAudit/updateSample`
-    const res = await axios.put(`${domain}/sampleAudit/updateSample`, putbody);
+    let uri = `${env.apiUrl}/sampleAudit/updateSample`
+    const res = await axios.put(`${env.apiUrl}/sampleAudit/updateSample`, putbody);
 
   }
 
@@ -521,10 +506,9 @@ const AuditForm = (props) => {
     console.log(props.userData.CountyId)
     let countyID = props.userData.CountyId;
     let SampleId = 1
-    getdataByCountyandsample(countyID, SampleId);
-    getCandidateByCountyandsample(countyID, SampleId);
+    getdataByCountyandsampleHandler(countyID, SampleId);
+    getCandidateByCountyandsampleHandler(countyID, SampleId);
     console.log(sampleDetail.SampleId)
-    alert(env.apiUrl)
 
   }, []);
 
@@ -670,7 +654,7 @@ const AuditForm = (props) => {
 
         {/* <button onClick={handleClickOpen}> click</button> */}
 
-        <button onClick={clickFunction}> click2</button>
+        {/* <button onClick={clickFunction}> click2</button> */}
 
 
 
@@ -817,6 +801,7 @@ const AuditForm = (props) => {
 
             <Grid item xs={12}>
 
+
               <MaterialTable
                 title="Enter counts for each candidates"
                 title={formValidation.CandidatesCounts ?
@@ -854,7 +839,7 @@ const AuditForm = (props) => {
                       }
                       addCandidate(postBody).then(response => {
                         console.log(response)
-                        getCandidateByCountyandsample(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
+                        getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
                           resolve()
 
                         })
@@ -919,7 +904,7 @@ const AuditForm = (props) => {
                         console.log('oldData', oldData)
                         console.log('sampleDetail.CountyId', sampleDetail.CountyId)
 
-                        getCandidateByCountyandsample(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
+                        getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
                           resolve()
                         })
 
@@ -932,6 +917,17 @@ const AuditForm = (props) => {
 
                 }}
               />
+
+            <Grid item spacing={12} justifyContent='center'>
+            <br />
+              <Button variant="contained" color="secondary"
+
+                
+                onClick={handleReset}
+              >
+                Reset Table
+              </Button>
+            </Grid>
             </Grid>
 
             <Grid Container item xs={12} justifyContent='center' spacing={5}>

@@ -1,6 +1,6 @@
 export const env = process.env.NODE_ENV === 'production'? {
-    apiUrl: 'https://sampleaudit.ncsbe.gov/sampleAudit/'
+    apiUrl: 'https://sampleaudit.ncsbe.gov/'
 }:{
-    apiUrl: 'http://localhost:4000/sampleAudit/'
+    apiUrl: 'http://localhost:4000/'
 }
 

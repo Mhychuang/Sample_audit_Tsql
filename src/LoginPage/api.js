@@ -1,4 +1,5 @@
 import axios from "axios";
+import { env } from "../variables";
 
 export const authenticateUser = async (email, password)=>{
     let putbody = {
@@ -8,7 +9,7 @@ export const authenticateUser = async (email, password)=>{
 
 
     const response = await axios.put(
-        `https://sampleaudit.ncsbe.gov/auth/check/${email}`, putbody
+        `${env.apiUrl}auth/check/${email}`, putbody
       );
 
       if (response.data === "User not found"){
