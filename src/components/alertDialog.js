@@ -60,7 +60,7 @@ export default function AlertDialog(props){
             Do you want to stay login?
           </DialogContentText>
 
-          <Countdown date={Date.now() + 5000}
+          <Countdown date={Date.now() + 20000}
         renderer={renderer}
         onComplete = {handleLogout}
         >

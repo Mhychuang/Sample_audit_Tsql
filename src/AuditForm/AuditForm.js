@@ -23,7 +23,7 @@ import Collapse from "@material-ui/core/Collapse";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { env } from "../variables";
-import { addCandidate, getdataByCountyandsample, getCandidateByCountyandsample } from "./api";
+import { addCandidate, getdataByCountyandsample, getCandidateByCountyandsample, handleReset } from "./api";
 
 
 import { AddBox, Edit } from "@material-ui/icons";
@@ -45,8 +45,10 @@ import DatePickers from '../components/timepicker';
 import CheckboxLabels from '../components/checkboxs';
 import Cards from '../components/infoCards';
 import SimplePaper from '../components/simplePaper';
-import { useLoginCookiesTimer } from '../loginCookies';
+import { useLoginCookiesTimer, setLoginCookies } from '../loginCookies';
 import AlertDialog from '../components/alertDialog'
+import Cookies from 'js-cookie';
+import { useHistory } from "react-router-dom";
 
 
 
@@ -60,6 +62,10 @@ const AuditForm = (props) => {
 
   const handleClose = () => {
     setAlertDialog(false)
+    setLoginCookies(props.userData)
+
+
+
   };
 
   useLoginCookiesTimer(props.userData, handleClickOpen);
@@ -150,7 +156,7 @@ const AuditForm = (props) => {
     //   TotalTime: TotalTime,
     //   CostOfCount: CostOfCount
     // });
-
+    console.log('Response', response)
     setSampleDetail({
       ...sampleDetail,
       ...response
@@ -172,26 +178,20 @@ const AuditForm = (props) => {
       "countyId":sampleDetail.CountyId, 
       "sampleId":sampleDetail.SampleId
       }
-
-    
-
     if (r == true) {
       const res = await axios.post(`${env.apiUrl}sampleAudit/getDefaultCandidateByCountySampleId`, postBody);
 
       console.log('executed the stored procedures', res)
-
       getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId)
 
+      //setFormValidation({ ...formValidation, CandidatesCounts: true })
 
+      alert('Please edit the table again.')
+      
 
-      alert('Table Reset Please edit again')
     } else {
       
     }
-
-    
-    //alert('delete')
-
   };
 
   const handleRadioButton = (e) => {
@@ -199,13 +199,26 @@ const AuditForm = (props) => {
     let SampleId = e.target.value
     getdataByCountyandsampleHandler(CountyId, SampleId)
     getCandidateByCountyandsampleHandler(CountyId, SampleId);
+    setFormValidation({
+      DateOfCount: false,
+    TimeOfCount: false,
+    VotingEquipmentUsed: false,
+    TotalTime: false,
+    CostOfCount: false,
+    PeoplePartyCounting: false,
+    HumanOrMachineError: false,
+    DifferenceExplanation: false,
+    CandidatesCounts: false,
+
+    })
+
   }
 
 
   const updateCandidate = async (newData, canId, putbody) => {
     //console.log('putbody', putbody)
     //console.log('canId', canId)
-    const res = await axios.put(`https://sampleaudit.ncsbe.gov/sampleAudit/updateCandidate`, putbody);
+    const res = await axios.put(`${env.apiUrl}sampleAudit/updateCandidate`, putbody);
     // console.log(newData)
     // console.log(candidateData)
     let updateData = [...candidateData]
@@ -230,8 +243,10 @@ const AuditForm = (props) => {
   }
 
   const updateSample = async (CountyId, SampleId, putbody) => {
-    let uri = `${env.apiUrl}/sampleAudit/updateSample`
-    const res = await axios.put(`${env.apiUrl}/sampleAudit/updateSample`, putbody);
+    
+    console.log(`${env.apiUrl}sampleAudit/updateSample`, putbody)
+    const res = await axios.put(`${env.apiUrl}sampleAudit/updateSample`, putbody);
+    console.log (res)
 
   }
 
@@ -352,12 +367,12 @@ const AuditForm = (props) => {
 
   const columns = [
     {
-      title: "Candidate Name", field: "CandidateName",
+      title: "Candidate Name", field: "CandidateName", 
+      
 
     },
     {
-      title: "Machine", field: "Machine", type: "numeric",
-
+      title: "Machine", field: "Machine", type: "numeric", 
 
 
     },
@@ -805,7 +820,7 @@ const AuditForm = (props) => {
               <MaterialTable
                 title="Enter counts for each candidates"
                 title={formValidation.CandidatesCounts ?
-                  <Typography className={classes.error}>Every candidate counts is required</Typography>
+                  <Typography className={classes.error}>Please make sure all candidate counts have been entered correctly.</Typography>
                   : "Enter counts for each candidates"}
                 columns={columns}
                 data={candidateData}
@@ -821,6 +836,8 @@ const AuditForm = (props) => {
 
                 style={formValidation.CandidatesCounts && { border: '2px solid red' }}
 
+              
+
                 editable={{
 
                   onRowAdd: (newData) => 
@@ -832,10 +849,10 @@ const AuditForm = (props) => {
                       let postBody = {
                         "CountyId": sampleDetail.CountyId,
                         "SampleId": sampleDetail.SampleId,
-                        "CandidateName": newData.CandidateName,
-                        "Machine": newData.Machine,
-                        "HandToEye": newData.HandToEye,
-                        "DifferenceInCount": DifferenceInCount
+                        "CandidateName": newData.CandidateName || 'Please provide valid candidate name',
+                        "Machine": newData.Machine || 0,
+                        "HandToEye": newData.HandToEye || 0,
+                        "DifferenceInCount": DifferenceInCount || 0
                       }
                       addCandidate(postBody).then(response => {
                         console.log(response)
@@ -850,8 +867,11 @@ const AuditForm = (props) => {
                     }),
                       
 
-                  onRowUpdate: (newData, oldData) => new Promise((resolve, reject) => {
-
+                  onRowUpdate: 
+                  
+                  (newData, oldData) => new Promise((resolve, reject) => {
+                    
+                    
                     setFormValidation({ ...formValidation, CandidatesCounts: false })
                     //Backend call
                     let canId = oldData.SampleCandidateId

@@ -17,7 +17,7 @@ export function useLoginCookiesTimer(userData, onOpenAlertDialog) {
   clearCookiesInterval();
 
   cookieIntervalId = setInterval(() => {
-    console.log('timer', Cookies.get('userData'))
+    console.log('timer', Cookies.get('userData.Email'))
     if (hasCookiesExpired()) {
       onOpenAlertDialog();
       
@@ -26,11 +26,12 @@ export function useLoginCookiesTimer(userData, onOpenAlertDialog) {
 }
 
 export function setLoginCookies(userData) {
-  //const in30Minutes = 1/48
-  //const in30Minutes = 3/86400;
-  const in30Minutes = 1/2
-  console.log('stay', userData)
+  const in30Minutes = 1/48
+  const in15Minutes = 1/96
+
+  const in10Minutes = 1/144
+  //console.log('stay', userData)
   Cookies.set('userData', JSON.stringify(userData), {
-      expires: in30Minutes
+      expires: in15Minutes
   });
 }

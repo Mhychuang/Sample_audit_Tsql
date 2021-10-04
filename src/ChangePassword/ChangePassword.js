@@ -68,12 +68,20 @@ export default function ChargePassword(props) {
 
   const [newPassword, setNewPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
+  const [error, setError] = useState('')
   const [webUserId, setWebUserId] = useState();
 
   //setWebUserId(props.userData.WebUserId)
 
   const handleNew = (e) => {
-    setNewPassword(e.target.value)
+    
+    if (e.target.value.length< 8){
+      setError('Password must have at least 8 characters')
+    }else{
+      setError('')
+      setNewPassword(e.target.value)
+    }
+    
   }
 
   const handleConfirm = (e) => {
@@ -88,11 +96,20 @@ export default function ChargePassword(props) {
 
   const handleChangePassword = () => {
     //ev.preventDefault()
-    if (newPassword === confirmPassword) {
+    
+    if (newPassword === undefined){
+      
+      setError('You must specify a password')
+    }
+
+  
+
+    if (newPassword === confirmPassword && newPassword.length >=8) {
       //props.onPasswordChanged();
       //console.log(props.userData.WebUserId) 
       updatePassword(webUserId, newPassword)
-
+      //alert("Passwords Changed, please login with new password")
+      alert("Password changed, please login with new password")
       history.push('/login');
     } else {
       alert("Passwords don't match")
@@ -119,8 +136,12 @@ export default function ChargePassword(props) {
             label="New Password"
             type="password"
             id="password"
+
             autoComplete="current-password"
             onChange={handleNew}
+            error ={error}
+            helperText ={error}
+            
           />
           <TextField
             variant="outlined"

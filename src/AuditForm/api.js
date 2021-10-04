@@ -51,7 +51,7 @@ import axios from "axios";
     
     let newSampleDetail ={
         CountyId: countyId,
-        SampleId: data.SampleId.toString(),
+        SampleId: data.SampleId.toString(),  //why to string
         ElectionDate: data.ElectionDate,
         TypeOfSample: data.TypeOfSample,
         PrecinctSiteName: data.PrecinctSiteName,
@@ -75,6 +75,7 @@ import axios from "axios";
     try {
       const response = await axios.get(`${env.apiUrl}sampleAudit/getCandidateByCountySampleId/${countyId}/${SampleId}`);
       let data = await response.data;
+
 
       return data
     } catch (error) {

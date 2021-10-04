@@ -16,6 +16,7 @@ import LoginPage from "./LoginPage";
 import ChangePassword from "./ChangePassword";
 import Cookies from 'js-cookie';
 import { clearCookiesInterval, setLoginCookies } from './loginCookies';
+import { env } from "./variables";
  
 function initUserData (){
   const userDataCookies = Cookies.get('userData')
@@ -46,6 +47,9 @@ const App = () => {
     Cookies.remove('userData');
   }
 
+  const fileurl = `${env.apiUrl}files/User-Manual.docx`
+  //<a href='https://sampleaudit.ncsbe.gov/files/User-Manual.docx' download>User-Manual</a>
+
   return (
     <Router>
       <div>
@@ -61,7 +65,8 @@ const App = () => {
               {userData.IsDefault === "False"? <Link to="/logout">Logout</Link>:<Link to="/login">Login</Link>}
             </li>
             <li>
-            <a href='https://sampleaudit.ncsbe.gov/files/User-Manual.docx' download>User-Manual</a>
+            <a href={`${env.apiUrl}files/User-Manual.docx`} download>User-Manual</a>
+            
             </li>
           </ul>
         </nav>
