@@ -7,6 +7,7 @@ import {
   Route,
   Link,
   useHistory,
+  Redirect,
 
 } from "react-router-dom";
 
@@ -85,7 +86,7 @@ const App = () => {
             <ChangePassword userData = {userData}/>
           </Route>
           <Route exact path={"/audit-form"}  >
-            <AuditForm userData = {userData}/>
+            {userData.IsDefault ? <AuditForm userData = {userData}/> : <Redirect to = '/login'/> }
           </Route>
           <Route path= "/">
             <LoginPage onUserAuthenticated = {handleUserAuthenticated} />

@@ -136,7 +136,7 @@ const AuditForm = (props) => {
 
   })
 
-
+ 
   const getdataByCountyandsampleHandler = async (countyId, SampleId) => {
     let response = await getdataByCountyandsample(countyId, SampleId)
     // setSampleDetail({
@@ -172,13 +172,13 @@ const AuditForm = (props) => {
   };
 
   const handleReset = async () => {
-
+    
     let r = window.confirm("Are you sure you want to reset the table?\n All edited data will be lost!");
 
     let postBody = {
-      "countyId": sampleDetail.CountyId,
-      "sampleId": sampleDetail.SampleId
-    }
+      "countyId":sampleDetail.CountyId, 
+      "sampleId":sampleDetail.SampleId
+      }
     if (r == true) {
       const res = await axios.post(`${env.apiUrl}sampleAudit/getDefaultCandidateByCountySampleId`, postBody);
 
@@ -188,10 +188,10 @@ const AuditForm = (props) => {
       //setFormValidation({ ...formValidation, CandidatesCounts: true })
 
       alert('Please edit the table again.')
-
+      
 
     } else {
-
+      
     }
   };
 
@@ -202,14 +202,14 @@ const AuditForm = (props) => {
     getCandidateByCountyandsampleHandler(CountyId, SampleId);
     setFormValidation({
       DateOfCount: false,
-      TimeOfCount: false,
-      VotingEquipmentUsed: false,
-      TotalTime: false,
-      CostOfCount: false,
-      PeoplePartyCounting: false,
-      HumanOrMachineError: false,
-      DifferenceExplanation: false,
-      CandidatesCounts: false,
+    TimeOfCount: false,
+    VotingEquipmentUsed: false,
+    TotalTime: false,
+    CostOfCount: false,
+    PeoplePartyCounting: false,
+    HumanOrMachineError: false,
+    DifferenceExplanation: false,
+    CandidatesCounts: false,
 
     })
 
@@ -244,10 +244,10 @@ const AuditForm = (props) => {
   }
 
   const updateSample = async (CountyId, SampleId, putbody) => {
-
+    
     console.log(`${env.apiUrl}sampleAudit/updateSample`, putbody)
     const res = await axios.put(`${env.apiUrl}sampleAudit/updateSample`, putbody);
-    console.log(res)
+    console.log (res)
 
   }
 
@@ -368,12 +368,12 @@ const AuditForm = (props) => {
 
   const columns = [
     {
-      title: "Candidate Name", field: "CandidateName",
-
+      title: "Candidate Name", field: "CandidateName", 
+      
 
     },
     {
-      title: "Machine", field: "Machine", type: "numeric",
+      title: "Machine", field: "Machine", type: "numeric", 
 
 
     },
@@ -525,8 +525,8 @@ const AuditForm = (props) => {
     getdataByCountyandsampleHandler(countyID, SampleId);
     getCandidateByCountyandsampleHandler(countyID, SampleId);
     console.log(sampleDetail.SampleId)
-
-
+    
+    
 
   }, []);
 
@@ -670,441 +670,425 @@ const AuditForm = (props) => {
 
   return (
 
-    <Grid>
-
-      <Grid container className={classes.entireForm} spacing={2} >
 
 
-        <Grid container item justifyContent='center' >
-          {title}
-
-          {/* <button onClick={handleClickOpen}> click</button> */}
-
-          {/* <button onClick={clickFunction}> click2</button> */}
+    <Grid container className={classes.entireForm} spacing={2} >
 
 
+      <Grid container item justifyContent='center' >
+        {title}
 
+        {/* <button onClick={handleClickOpen}> click</button> */}
 
-          <AlertDialog open={alertDialog} userData={props.userData} handleClose={handleClose} />
+        {/* <button onClick={clickFunction}> click2</button> */}
 
 
 
 
-        </Grid>
+        <AlertDialog open={alertDialog} userData={props.userData} handleClose={handleClose} />
 
-        <Grid container justifyContent='center' spacing={1}>
-          {/* <FormControl component="fieldset"> */}
-          {/* <FormLabel component="legend">Sample</FormLabel> */}
-          {/* <Grid item xs={3}>Sample</Grid> */}
-          {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleId} onChange={handleRadioButton}> */}
-          <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleId} onChange={handleRadioButton} row>
-            {/* <Grid item ><FormControlLabel value='1' control={<Radio />} label="Sample One" /></Grid> */}
-            <Box border={3} borderColor={label.label1Color} borderRadius={16} component="span" m={1} p={0} pr={1} pl={1}>
-              <FormControlLabel value='1' control={<Radio />} label={<span style={{ fontSize: '120%' }}>Sample One</span>} />
 
-            </Box>
 
-            <Box border={3} borderColor={label.label2Color} borderRadius={16} component="span" m={1} p={0} pr={1} pl={1}>
-              <FormControlLabel value='2' control={<Radio />} label={<span style={{ fontSize: '120%' }}>Sample Two</span>} />
-            </Box>
-
-          </RadioGroup>
-          {/* </FormControl> */}
-
-        </Grid>
 
       </Grid>
 
+      <Grid container justifyContent='center' spacing={1}>
+        {/* <FormControl component="fieldset"> */}
+        {/* <FormLabel component="legend">Sample</FormLabel> */}
+        {/* <Grid item xs={3}>Sample</Grid> */}
+        {/* <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleId} onChange={handleRadioButton}> */}
+        <RadioGroup aria-label="gender" name="gender1" value={sampleDetail.SampleId} onChange={handleRadioButton} row>
+          {/* <Grid item ><FormControlLabel value='1' control={<Radio />} label="Sample One" /></Grid> */}
+          <Box border={3} borderColor={label.label1Color} borderRadius={16} component="span" m={1} p={0} pr={1} pl={1}>
+            <FormControlLabel value='1' control={<Radio />} label={<span style={{ fontSize: '120%' }}>Sample One</span>} />
 
-    {sampleDetail.PrecinctSiteName ==='not enough samples'?
-             <Grid item xs={12} className={classes.bigTitle}>
-         Not enough samples
-           </Grid>
+          </Box>
+         
+                    <Box border={3} borderColor={label.label2Color} borderRadius={16} component="span" m={1} p={0} pr={1} pl={1}>
+                    <FormControlLabel value='2' control={<Radio />} label={<span style={{ fontSize: '120%' }}>Sample Two</span>} />
+                  </Box>
 
-:
-<Grid container className={classes.entireForm} spacing={2} >
-<Grid container item spacing={0} justifyContent='space-between' alignItems='stretch'>
+        </RadioGroup>
+        {/* </FormControl> */}
 
-  <Grid item xs >
-    <Cards cardName={'County'} CardValue={sampleDetail.CountyName} />
-  </Grid>
-
-  <Grid item xs >
-    <Cards cardName={'Election Date'} CardValue={sampleDetail.ElectionDate.toString().substring(0, 10)} />
-  </Grid>
-  <Grid item xs >
-    <Cards cardName={'Contest Name'} CardValue={sampleDetail.ContestName} />
-  </Grid>
-  <Grid item xs >
-    <Cards cardName={'Type Of Sample'} CardValue={sampleDetail.TypeOfSample} />
-  </Grid>
-  <Grid item xs >
-    <Cards cardName={'Site Name'} CardValue={sampleDetail.PrecinctSiteName} />
-  </Grid>
-</Grid>
-
-
-{/* <Grid container item spacing={10} justifyContent='center'>
-<Grid item xs={12} spacing={10}>
-  <SimplePaper></SimplePaper>
-</Grid>
-</Grid> */}
-
-{/* form starts here */}
-<Grid container item spacing={0} justifyContent='center'>
-
-
-  <Box border={1} padding={2}>
-    <Grid container spacing={2} justifyContent='center'>
-      <Grid item xs={12} className={classes.bigTitle}>
-        Sample Audit Form
       </Grid>
+    
 
-      <Grid container item xs={12}>
+      <Grid container item spacing={0} justifyContent='space-between' alignItems='stretch'>
 
-
-        <Grid item xs={6} style={{ border: "1px solid grey" }}>
-          <Typography className={classes.title}>Select date and time</Typography>
-          <DatePickers onDateChange={handleDateChange} onTimeChange={handleTimeChange}
-            selectedDate={sampleDetail.DateOfCount} selectedTime={sampleDetail.TimeOfCount}
-            formValidation={formValidation} />
+        <Grid item xs >
+          <Cards cardName={'County'} CardValue={sampleDetail.CountyName} />
         </Grid>
 
-        <Grid item xs={6} className={classes.VotingEquipmentUsed} style={{ border: "1px solid grey" }}>
-          <FormControl error={formValidation.VotingEquipmentUsed}>
-            <FormLabel ><Typography className={classes.title}>Voting equipment used for this sample</Typography></FormLabel>
-
-            <CheckboxLabels
-              onCheckBoxChange={handleCheckbox}
-              list={sampleDetail.VotingEquipmentUsed}>
-            </CheckboxLabels>
-
-            <FormHelperText>{formValidation.VotingEquipmentUsed ? 'Required' : ''}</FormHelperText>
-          </FormControl>
-
-
+        <Grid item xs >
+          <Cards cardName={'Election Date'} CardValue={sampleDetail.ElectionDate.toString().substring(0, 10)} />
         </Grid>
-
-        <Grid container item xs={6} style={{ border: "1px solid grey" }} className={classes.cost} >
-          <Grid item>
-            <Typography className={classes.title}>Time necessary to complete this count (not BOTH counts)</Typography>
-          </Grid>
-
-          <Grid item className={classes.costInput}>
-            <TextField
-              InputProps={{
-                startAdornment: <InputAdornment position="start">Hr</InputAdornment>,
-                inputProps: { min: 0, max: 30 },
-              }}
-              //required
-              type="number"
-              id="filled-required"
-              value={sampleDetail.TotalTime}
-
-
-              //variant="filled"
-              onChange={handleHourInput}
-              error={formValidation.TotalTime}
-              helperText={formValidation.TotalTime ? 'Required' : ''}
-            />
-          </Grid>
+        <Grid item xs >
+          <Cards cardName={'Contest Name'} CardValue={sampleDetail.ContestName} />
         </Grid>
-
-        <Grid container item xs={6} style={{ border: "1px solid grey" }} className={classes.cost} >
-          <Grid item className={classes.title}>
-            <Typography className={classes.title}> Cost or estimated cost of this count (not BOTH counts)</Typography>
-          </Grid>
-
-          <Grid item className={classes.costInput}  >
-            <TextField
-              InputProps={{
-                startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                inputProps: { min: 0, max: 99999 },
-              }}
-              //required
-              type="number"
-              id="filled-required"
-
-              value={sampleDetail.CostOfCount}
-
-              //variant="filled"
-              onChange={handleCostInput}
-              error={formValidation.CostOfCount}
-              helperText={formValidation.CostOfCount ? 'Required' : ''}
-            />
-          </Grid>
+        <Grid item xs >
+          <Cards cardName={'Type Of Sample'} CardValue={sampleDetail.TypeOfSample} />
+        </Grid>
+        <Grid item xs >
+          <Cards cardName={'Site Name'} CardValue={sampleDetail.PrecinctSiteName} />
         </Grid>
       </Grid>
 
-      <Grid item xs={12}>
 
-
-        <MaterialTable
-          ref={candidateTableRef}
-          title="Enter counts for each candidates"
-          title={formValidation.CandidatesCounts ?
-            <Typography className={classes.error}>Please make sure all candidate counts have been entered correctly.</Typography>
-            : "Enter counts for each candidates"}
-          columns={columns}
-          data={candidateData}
-          // icons={tableIcons} //table icons are imported in index.html
-
-          options={{
-            search: false,
-            paging: false,
-            sorting: false,
-            actionsColumnIndex: -1,
-
-          }}
-
-          style={formValidation.CandidatesCounts && { border: '2px solid red' }}
-
-
-
-          editable={{
-
-            onRowAdd: (newData) =>
-              new Promise((resolve, reject) => {
-                let DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
-
-                console.log(sampleDetail)
-
-                let postBody = {
-                  "CountyId": sampleDetail.CountyId,
-                  "SampleId": sampleDetail.SampleId,
-                  "CandidateName": newData.CandidateName || 'Please provide valid candidate name',
-                  "Machine": newData.Machine || 0,
-                  "HandToEye": newData.HandToEye || 0,
-                  "DifferenceInCount": DifferenceInCount || 0
-                }
-                addCandidate(postBody).then(response => {
-                  console.log(response)
-                  getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(() => {
-                    resolve()
-
-                  })
-
-                });
-
-
-              }),
-
-
-            onRowUpdate:
-
-              (newData, oldData) => new Promise((resolve, reject) => {
-
-
-                setFormValidation({ ...formValidation, CandidatesCounts: false })
-                //Backend call
-                let canId = oldData.SampleCandidateId
-                //let putbody = JSON.stringify(newData)
-
-                let DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
-                // DifferenceInCount == 0 ? setShowExplanation('none') : setShowExplanation('block');
-
-                let putbody = {
-                  "SampleCandidateId": newData.SampleCandidateId,
-                  "CandidateName": newData.CandidateName,
-                  "Machine": newData.Machine,
-                  "HandToEye": newData.HandToEye,
-                  "DifferenceInCount": DifferenceInCount
-                }
-
-                //console.log(putbody);
-                //Promise.then() takes two arguments, a callback for success and another for failure.
-                //Both are optional, so you can add a callback for success or failure only.
-                // here response can be any word 
-                updateCandidate(newData, canId, putbody).then(response => {
-                  //console.log(response)
-                  resolve()
-                });
-
-                // axios.put(`https://sampleaudit.ncsbe.gov/updateCandidate/${canId}`, putbody)
-                // .then((response, rejct) => {
-                //   let updateDate = candidateData
-                //   let objIndex = updateDate.findIndex(( obj => obj.CandidateId == newData.CandidateId));     
-                //   updateDate[objIndex].Machine = newData.Machine
-                //   updateDate[objIndex].HandToEye = newData.HandToEye
-                //   updateDate[objIndex].DifferenceInCount = newData.DifferenceInCount
-                //   setCandidateData(updateDate)
-
-                // resolve()
-
-                // });
-                // //why resolve here. will not wait for axios and we since it is a promise we need to excute the resolce. 
-                // or we can do somthing like resolve('done') but we don't know what material table is going to do with this resolve. 
-
-                // //resolve()
-              }),
-
-            onRowDelete: oldData =>
-              new Promise(resolve => {
-                let SampleCandidateId = oldData.SampleCandidateId
-                console.log(SampleCandidateId)
-
-                deleteCandidate(SampleCandidateId).then(response => {
-                  console.log('oldData', oldData)
-                  console.log('sampleDetail.CountyId', sampleDetail.CountyId)
-
-                  getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(() => {
-                    resolve()
-                  })
-
-
-                })
-
-
-              }),
-
-
-          }}
-        />
-
-        <Grid item spacing={12} justifyContent='center'>
-          <br />
-          <Button variant="contained" color="secondary"
-
-
-            onClick={handleReset}
-          >
-            Reset Table
-          </Button>
+      {/* <Grid container item spacing={10} justifyContent='center'>
+        <Grid item xs={12} spacing={10}>
+          <SimplePaper></SimplePaper>
         </Grid>
-      </Grid>
+      </Grid> */}
 
-      <Grid Container item xs={12} justifyContent='center' spacing={5}>
-        {/* <Collapse in={showExplanation} timeout={1500}>
-        <Fade in={showExplanation} timeout={500}> */}
+      {/* form starts here */}
+      <Grid container item spacing={0} justifyContent='center'>
 
-        <Collapse in={true} timeout={1000} justifyContent='center'>
-          <Fade in={true} timeout={1000} justifyContent='center'>
 
-            <Grid container justifyContent='center'
-              style={formValidation.DifferenceExplanation && { border: '2px solid red' }}>
-              <Grid item className={classes.title}>
-                <Typography className={classes.title}>Explanation of any difference (skip this section if there was no difference in any totals)</Typography>
-                {/* error={formValidation.PeoplePartyCounting}
-          helperText={formValidation.PeoplePartyCounting ? 'Required' : ' '} */}
+        <Box border={1} padding={2}>
+          <Grid container spacing={2} justifyContent='center'>
+            <Grid item xs={12} className={classes.bigTitle}>
+              Sample Audit Form
+            </Grid>
+
+            <Grid container item xs={12}>
+
+
+              <Grid item xs={6} style={{ border: "1px solid grey" }}>
+                <Typography className={classes.title}>Select date and time</Typography>
+                <DatePickers onDateChange={handleDateChange} onTimeChange={handleTimeChange}
+                  selectedDate={sampleDetail.DateOfCount} selectedTime={sampleDetail.TimeOfCount}
+                  formValidation={formValidation} />
               </Grid>
 
+              <Grid item xs={6} className={classes.VotingEquipmentUsed} style={{ border: "1px solid grey" }}>
+                <FormControl error={formValidation.VotingEquipmentUsed}>
+                  <FormLabel ><Typography className={classes.title}>Voting equipment used for this sample</Typography></FormLabel>
 
-              <Grid container item xs={12} justifyContent='center' style={{ border: "1px solid grey" }} >
-                <Grid item xs={8} className={classes.text} justifyContent='center'>
-                  <Typography className={classes.title}>If there is a difference, is it attributable to machine error or human error?</Typography>
+                  <CheckboxLabels
+                    onCheckBoxChange={handleCheckbox}
+                    list={sampleDetail.VotingEquipmentUsed}>
+                  </CheckboxLabels>
+
+                  <FormHelperText>{formValidation.VotingEquipmentUsed ? 'Required' : ''}</FormHelperText>
+                </FormControl>
+
+
+              </Grid>
+
+              <Grid container item xs={6} style={{ border: "1px solid grey" }} className={classes.cost} >
+                <Grid item>
+                  <Typography className={classes.title}>Time necessary to complete this count (not BOTH counts)</Typography>
                 </Grid>
 
-                <Grid item xs={4} justifyContent='center'>
-                  <RadioGroup row onChange={handleRadio} value={String(sampleDetail.HumanOrMachineError)}>
+                <Grid item className={classes.costInput}>
+                  <TextField
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">Hr</InputAdornment>,
+                      inputProps: { min: 0, max: 30 },
+                    }}
+                    //required
+                    type="number"
+                    id="filled-required"
+                    value={sampleDetail.TotalTime}
 
-                    <FormControlLabel value="Machine" control={<Radio />} label="Machine error" />
-                    <FormControlLabel value="Human" control={<Radio />} label="Human error" />
-                  </RadioGroup>
+
+                    //variant="filled"
+                    onChange={handleHourInput}
+                    error={formValidation.TotalTime}
+                    helperText={formValidation.TotalTime ? 'Required' : ''}
+                  />
                 </Grid>
               </Grid>
 
+              <Grid container item xs={6} style={{ border: "1px solid grey" }} className={classes.cost} >
+                <Grid item className={classes.title}>
+                  <Typography className={classes.title}> Cost or estimated cost of this count (not BOTH counts)</Typography>
+                </Grid>
 
+                <Grid item className={classes.costInput}  >
+                  <TextField
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      inputProps: { min: 0, max: 99999 },
+                    }}
+                    //required
+                    type="number"
+                    id="filled-required"
+
+                    value={sampleDetail.CostOfCount}
+
+                    //variant="filled"
+                    onChange={handleCostInput}
+                    error={formValidation.CostOfCount}
+                    helperText={formValidation.CostOfCount ? 'Required' : ''}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item xs={12}>
+
+
+              <MaterialTable
+              ref = {candidateTableRef}
+                title="Enter counts for each candidates"
+                title={formValidation.CandidatesCounts ?
+                  <Typography className={classes.error}>Please make sure all candidate counts have been entered correctly.</Typography>
+                  : "Enter counts for each candidates"}
+                columns={columns}
+                data={candidateData}
+                // icons={tableIcons} //table icons are imported in index.html
+
+                options={{
+                  search: false,
+                  paging: false,
+                  sorting: false,
+                  actionsColumnIndex: -1,
+
+                }}
+
+                style={formValidation.CandidatesCounts && { border: '2px solid red' }}
+
+              
+
+                editable={{
+
+                  onRowAdd: (newData) => 
+                    new Promise((resolve, reject) => {
+                      let DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
+
+                      console.log(sampleDetail)
+
+                      let postBody = {
+                        "CountyId": sampleDetail.CountyId,
+                        "SampleId": sampleDetail.SampleId,
+                        "CandidateName": newData.CandidateName || 'Please provide valid candidate name',
+                        "Machine": newData.Machine || 0,
+                        "HandToEye": newData.HandToEye || 0,
+                        "DifferenceInCount": DifferenceInCount || 0
+                      }
+                      addCandidate(postBody).then(response => {
+                        console.log(response)
+                        getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
+                          resolve()
+
+                        })
+                        
+                      });
+
+
+                    }),
+                      
+
+                  onRowUpdate: 
+                  
+                  (newData, oldData) => new Promise((resolve, reject) => {
+                    
+                    
+                    setFormValidation({ ...formValidation, CandidatesCounts: false })
+                    //Backend call
+                    let canId = oldData.SampleCandidateId
+                    //let putbody = JSON.stringify(newData)
+
+                    let DifferenceInCount = Math.abs(parseInt(newData.Machine) - parseInt(newData.HandToEye))
+                    // DifferenceInCount == 0 ? setShowExplanation('none') : setShowExplanation('block');
+
+                    let putbody = {
+                      "SampleCandidateId": newData.SampleCandidateId,
+                      "CandidateName": newData.CandidateName,
+                      "Machine": newData.Machine,
+                      "HandToEye": newData.HandToEye,
+                      "DifferenceInCount": DifferenceInCount
+                    }
+
+                    //console.log(putbody);
+                    //Promise.then() takes two arguments, a callback for success and another for failure.
+                    //Both are optional, so you can add a callback for success or failure only.
+                    // here response can be any word 
+                    updateCandidate(newData, canId, putbody).then(response => {
+                      //console.log(response)
+                      resolve()
+                    });
+
+                    // axios.put(`https://sampleaudit.ncsbe.gov/updateCandidate/${canId}`, putbody)
+                    // .then((response, rejct) => {
+                    //   let updateDate = candidateData
+                    //   let objIndex = updateDate.findIndex(( obj => obj.CandidateId == newData.CandidateId));     
+                    //   updateDate[objIndex].Machine = newData.Machine
+                    //   updateDate[objIndex].HandToEye = newData.HandToEye
+                    //   updateDate[objIndex].DifferenceInCount = newData.DifferenceInCount
+                    //   setCandidateData(updateDate)
+
+                    // resolve()
+
+                    // });
+                    // //why resolve here. will not wait for axios and we since it is a promise we need to excute the resolce. 
+                    // or we can do somthing like resolve('done') but we don't know what material table is going to do with this resolve. 
+
+                    // //resolve()
+                  }),
+
+                  onRowDelete: oldData =>
+                    new Promise(resolve => {
+                      let SampleCandidateId = oldData.SampleCandidateId
+                      console.log(SampleCandidateId)
+
+                      deleteCandidate(SampleCandidateId).then(response => {
+                        console.log('oldData', oldData)
+                        console.log('sampleDetail.CountyId', sampleDetail.CountyId)
+
+                        getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(()=>{
+                          resolve()
+                        })
+
+                        
+                      })
+
+
+                    }),
+
+
+                }}
+              />
+
+            <Grid item spacing={12} justifyContent='center'>
+            <br />
+              <Button variant="contained" color="secondary"
+
+                
+                onClick={handleReset}
+              >
+                Reset Table
+              </Button>
+            </Grid>
+            </Grid>
+
+            <Grid Container item xs={12} justifyContent='center' spacing={5}>
+              {/* <Collapse in={showExplanation} timeout={1500}>
+                <Fade in={showExplanation} timeout={500}> */}
+
+              <Collapse in={true} timeout={1000} justifyContent='center'>
+                <Fade in={true} timeout={1000} justifyContent='center'>
+
+                  <Grid container justifyContent='center'
+                    style={formValidation.DifferenceExplanation && { border: '2px solid red' }}>
+                    <Grid item className={classes.title}>
+                      <Typography className={classes.title}>Explanation of any difference (skip this section if there was no difference in any totals)</Typography>
+                      {/* error={formValidation.PeoplePartyCounting}
+                  helperText={formValidation.PeoplePartyCounting ? 'Required' : ' '} */}
+                    </Grid>
+
+
+                    <Grid container item xs={12} justifyContent='center' style={{ border: "1px solid grey" }} >
+                      <Grid item xs={8} className={classes.text} justifyContent='center'>
+                        <Typography className={classes.title}>If there is a difference, is it attributable to machine error or human error?</Typography>
+                      </Grid>
+
+                      <Grid item xs={4} justifyContent='center'>
+                        <RadioGroup row onChange={handleRadio} value={String(sampleDetail.HumanOrMachineError)}>
+
+                          <FormControlLabel value="Machine" control={<Radio />} label="Machine error" />
+                          <FormControlLabel value="Human" control={<Radio />} label="Human error" />
+                        </RadioGroup>
+                      </Grid>
+                    </Grid>
+
+
+
+                    <Grid item xs={12} className={classes.textBox}>
+
+                      <Grid item xs={12} className={classes.title}>
+                        <Typography className={classes.title}>Detailed explanation of what caused the difference</Typography>
+
+                      </Grid>
+                      <form noValidate autoComplete="on">
+
+                        <TextField
+                          id="outlined-multiline-static"
+                          // label="Detailed explanation of what caused the difference"
+                          multiline
+                          rows={5}
+                          value={sampleDetail.DifferenceExplanation}
+                          defaultValue=''
+                          variant="outlined"
+                          onChange={handleExplanation}
+                        />
+
+                      </form>
+                    </Grid>
+
+                  </Grid>
+                </Fade>
+              </Collapse>
+            </Grid>
+
+            <Grid Container item xs={12} justifyContent='center' spacing={5}>
+
+              <Grid item xs={12} className={classes.title}>
+                <Typography className={classes.title}>Who conducted the count (must consist of multiple persons of different party affiliation)</Typography>
+
+              </Grid>
 
               <Grid item xs={12} className={classes.textBox}>
+                <TextField
 
-                <Grid item xs={12} className={classes.title}>
-                  <Typography className={classes.title}>Detailed explanation of what caused the difference</Typography>
+                  id="outlined-multiline-static"
+                  //label="Name, Party affiliation;"
+                  multiline
+                  rows={5}
+                  //defaultValue={sampleDetail.PeoplePartyCounting}
+                  value={sampleDetail.PeoplePartyCounting}
+                  variant="outlined"
+                  onChange={handlePeople}
 
-                </Grid>
-                <form noValidate autoComplete="on">
 
-                  <TextField
-                    id="outlined-multiline-static"
-                    // label="Detailed explanation of what caused the difference"
-                    multiline
-                    rows={5}
-                    value={sampleDetail.DifferenceExplanation}
-                    defaultValue=''
-                    variant="outlined"
-                    onChange={handleExplanation}
-                  />
-
-                </form>
+                  //className={classes.textField}
+                  error={formValidation.PeoplePartyCounting}
+                  helperText={formValidation.PeoplePartyCounting ? 'Required' : ' '}
+                />
               </Grid>
 
+
             </Grid>
-          </Fade>
-        </Collapse>
-      </Grid>
-
-      <Grid Container item xs={12} justifyContent='center' spacing={5}>
-
-        <Grid item xs={12} className={classes.title}>
-          <Typography className={classes.title}>Who conducted the count (must consist of multiple persons of different party affiliation)</Typography>
-
-        </Grid>
-
-        <Grid item xs={12} className={classes.textBox}>
-          <TextField
-
-            id="outlined-multiline-static"
-            //label="Name, Party affiliation;"
-            multiline
-            rows={5}
-            //defaultValue={sampleDetail.PeoplePartyCounting}
-            value={sampleDetail.PeoplePartyCounting}
-            variant="outlined"
-            onChange={handlePeople}
-
-
-            //className={classes.textField}
-            error={formValidation.PeoplePartyCounting}
-            helperText={formValidation.PeoplePartyCounting ? 'Required' : ' '}
-          />
-        </Grid>
-
-
-      </Grid>
 
 
 
-      {/* <Collapse in={hasError()} timeout={1500}>
-      <Fade in={hasError()} timeout={500}>
-        <Grid container item xs={12} justifyContent='center' >
-          Please filled out required
-        </Grid>
-      </Fade>
-    </Collapse> */}
+            {/* <Collapse in={hasError()} timeout={1500}>
+              <Fade in={hasError()} timeout={500}>
+                <Grid container item xs={12} justifyContent='center' >
+                  Please filled out required
+                </Grid>
+              </Fade>
+            </Collapse> */}
 
-      <Grid item spacing={12} justifyContent='center'>
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={handleSubmit}
-          disabled={formInfoSubmitted}
-        >
-          {
-            (formInfoSubmitted && 'Your form is submitted!')
-            || (!formInfoSubmitted && 'Submit')
+            <Grid item spacing={12} justifyContent='center'>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={formInfoSubmitted}
+              >
+                {
+                  (formInfoSubmitted && 'Your form is submitted!')
+                  || (!formInfoSubmitted && 'Submit')
 
-          }
-        </Button>
+                }
+              </Button>
+            </Grid>
+
+          </Grid>
+
+        </Box>
+
+
+
+
+
+
       </Grid>
 
     </Grid>
-
-  </Box>
-
-
-
-
-
-
-</Grid>
-
-</Grid>
-    
-    }
-
-     
-
-    </Grid>
-
   );
 };
 
