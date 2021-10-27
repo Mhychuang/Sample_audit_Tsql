@@ -109,7 +109,7 @@ export default function LoginPage(props) {
 
     const userData = await authenticateUser(email, password);
 
-    if (userData === "Email not in the system") {
+    if (userData === "Account not in the system") {
       alert(userData)
     }
     else if (userData === "login fail") {
@@ -160,7 +160,7 @@ return (
           required
           fullWidth
           id="email"
-          label="Email Address"
+          label="BOE login name"
           name="email"
           autoComplete="email"
           autoFocus

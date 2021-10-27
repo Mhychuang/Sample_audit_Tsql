@@ -55,8 +55,6 @@ import { useHistory } from "react-router-dom";
 const AuditForm = (props) => {
   const [alertDialog, setAlertDialog] = useState(false)
 
-  const candidateTableRef = useRef(null);
-
   const handleClickOpen = () => {
     setAlertDialog(true)
   }
@@ -103,6 +101,7 @@ const AuditForm = (props) => {
 
   const [showExplanation, setShowExplanation] = useState(false)
 
+  const [editMode, setEditMode] = useState(false);
 
   const [formValidation, setFormValidation] = useState({
     DateOfCount: false,
@@ -218,9 +217,8 @@ const AuditForm = (props) => {
 
   const updateCandidate = async (newData, canId, putbody) => {
     //console.log('putbody', putbody)
-    //console.log('canId', canId)
+    //console.log('canId', canId)  
     const res = await axios.put(`${env.apiUrl}sampleAudit/updateCandidate`, putbody);
-    // console.log(newData)
     // console.log(candidateData)
     let updateData = [...candidateData]
     let objIndex = updateData.findIndex((obj => obj.SampleCandidateId == newData.SampleCandidateId));
@@ -293,7 +291,20 @@ const AuditForm = (props) => {
 
   }
 
+  const scrollToTop = () => {
+    window.scrollTo({
+        top: 10,
+        behavior: "smooth",
+    });
+};
+
   const handleSubmit = (e) => {
+    console.log('edit mode', editMode)
+
+    if (editMode){
+      alert("You are still editng one candidate record, please save it.")
+      return
+    }
 
     let newFormValidation = { ...formValidation };
 
@@ -303,7 +314,7 @@ const AuditForm = (props) => {
     newFormValidation = showExplanation && !sampleDetail.HumanOrMachineError ? { ...newFormValidation, HumanOrMachineError: true } : newFormValidation;
     newFormValidation = showExplanation && !sampleDetail.DifferenceExplanation ? { ...newFormValidation, DifferenceExplanation: true } : newFormValidation;
     newFormValidation = !sampleDetail.PeoplePartyCounting ? { ...newFormValidation, PeoplePartyCounting: true } : newFormValidation;
-    newFormValidation = !sampleDetail.CostOfCount ? { ...newFormValidation, CostOfCount: true } : newFormValidation;
+    //newFormValidation = !sampleDetail.CostOfCount ? { ...newFormValidation, CostOfCount: true } : newFormValidation;
     newFormValidation = !sampleDetail.TotalTime ? { ...newFormValidation, TotalTime: true } : newFormValidation;
 
     let HandToEyeIsZero = candidateData.some(obj => obj.HandToEye != 0)
@@ -348,7 +359,9 @@ const AuditForm = (props) => {
 
       let message = "Sample " + sampleDetail.SampleId + " submitted"
 
-      alert(message)
+      alert(message);
+
+      scrollToTop();
 
 
     } else {
@@ -530,11 +543,6 @@ const AuditForm = (props) => {
 
   }, []);
 
-  React.useEffect(() => {
-
-    console.log('ref', candidateTableRef)
-
-  });
 
 
 
@@ -720,8 +728,11 @@ const AuditForm = (props) => {
              <Grid item xs={12} className={classes.bigTitle}>
          Not enough samples
            </Grid>
-
 :
+
+//{ true &&
+
+
 <Grid container className={classes.entireForm} spacing={2} >
 <Grid container item spacing={0} justifyContent='space-between' alignItems='stretch'>
 
@@ -829,8 +840,8 @@ const AuditForm = (props) => {
 
               //variant="filled"
               onChange={handleCostInput}
-              error={formValidation.CostOfCount}
-              helperText={formValidation.CostOfCount ? 'Required' : ''}
+              // error={formValidation.CostOfCount}
+              // helperText={formValidation.CostOfCount ? 'Required' : ''}
             />
           </Grid>
         </Grid>
@@ -840,7 +851,6 @@ const AuditForm = (props) => {
 
 
         <MaterialTable
-          ref={candidateTableRef}
           title="Enter counts for each candidates"
           title={formValidation.CandidatesCounts ?
             <Typography className={classes.error}>Please make sure all candidate counts have been entered correctly.</Typography>
@@ -878,7 +888,7 @@ const AuditForm = (props) => {
                   "DifferenceInCount": DifferenceInCount || 0
                 }
                 addCandidate(postBody).then(response => {
-                  console.log(response)
+                  
                   getCandidateByCountyandsampleHandler(sampleDetail.CountyId, sampleDetail.SampleId).then(() => {
                     resolve()
 
@@ -959,6 +969,32 @@ const AuditForm = (props) => {
 
 
           }}
+
+          components={{
+            Action: (props) => {
+              const action =
+                typeof props.action === "function" ? props.action() : props.action;
+    
+              return (
+                <action.icon
+                  disabled={action.disabled}
+                  hidden={action.hidden}
+                  tooltip={action.tooltip}
+                  onClick={(event) => {
+                    console.log('from action', action.tooltip);
+                    setEditMode(
+                      action.tooltip === "Edit" ||
+                        action.tooltip === "Add" ||
+                        action.tooltip === "Delete"
+                    );
+                    action.onClick(event, props.data);
+                  }}
+                />
+              );
+            }
+          }}
+
+          
         />
 
         <Grid item spacing={12} justifyContent='center'>
