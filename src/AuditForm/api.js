@@ -15,11 +15,15 @@ import axios from "axios";
 
 
   export const getdataByCountyandsample = async (countyId, SampleId) => {
+   
     console.log(countyId, SampleId)
+    console.log(`${env.apiUrl}sampleAudit/getDetailByCountySampleId/${countyId}/${SampleId}`)
+
     const response = await axios.get(
       `${env.apiUrl}sampleAudit/getDetailByCountySampleId/${countyId}/${SampleId}`
     );
     let data = await response.data;
+    console.log('data from api', data)
     let newDateOfCount = String(new Date())
     let newTimeOfCount = String(new Date())
 
@@ -48,7 +52,7 @@ import axios from "axios";
     const CostOfCount = Number(data.CostOfCount)
     const TotalTime = Number(data.TotalTime)
     const VotingArray = data.VotingEquipmentUsed.split(',');
-    
+                             
     let newSampleDetail ={
         CountyId: countyId,
         SampleId: data.SampleId.toString(),  //why to string

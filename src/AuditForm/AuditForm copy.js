@@ -58,12 +58,13 @@ const AuditForm = (props) => {
   const candidateTableRef = useRef(null);
 
   const handleClickOpen = () => {
-    setAlertDialog(true)
+    //setAlertDialog(true)
+    setAlertDialog(false)
   }
 
   const handleClose = () => {
     setAlertDialog(false)
-    setLoginCookies(props.userData)
+    //setLoginCookies(props.userData)
 
 
 
@@ -685,7 +686,7 @@ const AuditForm = (props) => {
 
 
 
-        <AlertDialog open={alertDialog} userData={props.userData} handleClose={handleClose} />
+        {/* <AlertDialog open={alertDialog} userData={props.userData} handleClose={handleClose} /> */}
 
 
 

@@ -27,7 +27,7 @@ export default function AlertDialog(props){
   
   
     const handleStay = () => {
-        setLoginCookies(props.userData)
+        //setLoginCookies(props.userData)
         setClose('false')
       
     };

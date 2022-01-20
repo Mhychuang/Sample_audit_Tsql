@@ -17,10 +17,16 @@ import { useHistory } from "react-router-dom";
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
 
 
 
-import { authenticateUser } from './api';
+import { authenticateUser, getAllCounty } from './api';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -34,6 +40,10 @@ function Copyright() {
     </Typography>
   );
 }
+
+
+
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -69,12 +79,16 @@ const useStyles = makeStyles((theme) => ({
 export default function LoginPage(props) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+
+  const [counties, setCounties] = useState();
+
   const history = useHistory();
 
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
     setOpen(true);
+    //console.log('conties data from hook',counties[0].label)
   };
 
   const handleClose = () => {
@@ -93,6 +107,33 @@ export default function LoginPage(props) {
 
 
   const classes = useStyles();
+
+
+
+// for drop down
+  const getAllCountyFromAPI = async () =>{
+    let response = await getAllCounty();
+    console.log(response)
+
+    setCounties(response.data);
+    console.log(counties)
+  }
+
+
+  React.useEffect(() => {
+    getAllCountyFromAPI()
+    console.log('conties data from hook',counties)
+  }, []);
+
+
+  const handleChange = (e)=>{
+    //alert (e.target.value)
+    //console.log(e.target)
+    props.onSelect(e.target.value);
+
+    history.push('/audit-form')
+
+  }
 
   const handleLogin = async () => {
     //get data through API and vrify login
@@ -147,13 +188,13 @@ return (
   <Container component="main" maxWidth="xs">
     <CssBaseline />
     <div className={classes.paper}>
-      <Avatar className={classes.avatar}>
+      {/* <Avatar className={classes.avatar}>
         <LockOutlinedIcon />
-      </Avatar>
+      </Avatar> */}
       <Typography component="h1" variant="h5">
-        Sign in
+       Please select your county.
       </Typography>
-      <form className={classes.form}>
+      {/* <form className={classes.form}>
         <TextField
           variant="outlined"
           margin="normal"
@@ -196,14 +237,27 @@ return (
             Forgot password?
             </Link>
 
-            {/* <button type="button" onClick={handleOpen}>
-            Forgot password?
-            </button> */}
-
           </Grid>
 
         </Grid>
-      </form>
+      </form>  */}
+
+      <FormControl className={classes.formControl}>
+        <InputLabel id="demo-simple-select-helper-label">County</InputLabel>
+        <Select
+          labelId="demo-simple-select-helper-label"
+          id="demo-simple-select-helper"
+          //value={age}
+          onChange={handleChange}
+        >
+               {counties && counties.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+        </Select>
+        <FormHelperText>Please select your county to begin</FormHelperText>
+      </FormControl>
 
 
     </div>

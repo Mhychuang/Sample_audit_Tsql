@@ -25,4 +25,14 @@ export const authenticateUser = async (email, password)=>{
 }
 
 
+export const getAllCounty = async ()=>{
+ 
+  let response = await axios.get(
+    `${env.apiUrl}sampleAudit/allCounty/`
+  );
+
+  return response
+
+}
+
 

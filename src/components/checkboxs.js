@@ -94,14 +94,14 @@ const votingArray = String(props.list).split(',')
     <FormControlLabel
         control={
           <Checkbox
-          checked={votingArray.includes("iVotronic_touchscreen_machines")}
+          checked={votingArray.includes("Hart Verity")}
             onChange={props.onCheckBoxChange}
-            name="iVotronic_touchscreen_machines"
+            name="Hart Verity"
             color="primary"
           />
           
         }
-        label="iVotronic touchscreen machines"
+        label="Hart Verity"
       />    
     
     </FormGroup>

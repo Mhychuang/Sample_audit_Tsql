@@ -1,8 +1,9 @@
 import React from "react";
 import { useState } from "react";
 //BrowserRouter as Router,
+//HashRouter as Router,
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Switch,
   Route,
   Link,
@@ -33,19 +34,24 @@ function Logout(props) {
 
 const App = () => {
   const [userData, setUserData] = useState(initUserData());
-
+  const [countyId, setCountyId] = useState();
   console.log('user data',userData)
 
   const handleUserAuthenticated =(userData)=>{
     // console.log(userData);
     setUserData(userData);
-    setLoginCookies(userData);
+    //setLoginCookies(userData);
   }
 
   const handleLogout = () => {
     clearCookiesInterval();
     setUserData({});
     Cookies.remove('userData');
+  }
+
+  const handleOnselect = (countyIdValue) =>{
+    //setCountyId({CountyId: countyIdValue})
+    setUserData({CountyId: countyIdValue})
   }
 
   const fileurl = `${env.apiUrl}files/User-Manual.docx`
@@ -62,8 +68,11 @@ const App = () => {
             <li>
               {userData.IsDefault === "False" && <Link to="/audit-form">Audit Form</Link> }
             </li>
-            <li>
+            {/* <li>
               {userData.IsDefault === "False"? <Link to="/logout">Logout</Link>:<Link to="/login">Login</Link>}
+            </li> */}
+            <li>
+              {<Link to="/">County Selection</Link> }
             </li>
             <li>
             <a href={`${env.apiUrl}files/User-Manual.docx`} download>User-Manual</a>
@@ -77,7 +86,7 @@ const App = () => {
          
         <Switch>
           <Route exact path="/login">
-            <LoginPage onUserAuthenticated = {handleUserAuthenticated} />
+            <LoginPage onUserAuthenticated = {handleUserAuthenticated} onSelect = {handleOnselect}/>
           </Route>
           <Route exact path="/logout">
             <Logout onLogout={handleLogout} />
@@ -86,10 +95,11 @@ const App = () => {
             <ChangePassword userData = {userData}/>
           </Route>
           <Route exact path={"/audit-form"}  >
-            {userData.IsDefault ? <AuditForm userData = {userData}/> : <Redirect to = '/login'/> }
+            {<AuditForm userData = {userData}/>}
+            {/* {userData.IsDefault ? <AuditForm userData = {userData}/> : <Redirect to = '/login'/> } */}
           </Route>
           <Route path= "/">
-            <LoginPage onUserAuthenticated = {handleUserAuthenticated} />
+            <LoginPage onUserAuthenticated = {handleUserAuthenticated} onSelect = {handleOnselect} />
           </Route>
         </Switch>
      
