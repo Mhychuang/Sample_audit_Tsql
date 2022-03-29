@@ -5,27 +5,32 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+//import { black } from 'material-ui/styles/colors';
 
 const useStyles = makeStyles({
   root: {
+    border: `1px solid black`,
     minWidth: 70,
     margin: 0,
     padding:0,
     textAlign: "center",
     align: "center",
     minHeight: 5,
-    height: '100%'
+    height: '100%',
+    
 
   },
 
   title: {
-    fontSize: 14,
+    fontSize: 15,
     margin: 0,
     padding:0,
+    
   },
   pos: {
     margin: 0,
     padding:0,
+    
   },
 });
 

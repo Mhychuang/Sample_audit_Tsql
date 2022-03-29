@@ -465,6 +465,14 @@ const AuditForm = (props) => {
   }
 
 
+
+  //cutom function component
+  //react component starts with cap
+  const NewButton = (props)=>{
+    return "newButton"
+
+  }
+
   const handleCheckbox = (event) => {
 
     let updatedList = sampleDetail.VotingEquipmentUsed;
@@ -549,8 +557,6 @@ const AuditForm = (props) => {
 
   }, []);
 
-
-  const handle
 
 
   // React.useEffect(() => {
@@ -1024,9 +1030,12 @@ const AuditForm = (props) => {
                     }}
 
                     components={{
+                      //Action: NewButton
                       Action: (props) => {
+                        
                         const action =
                           typeof props.action === "function" ? props.action() : props.action;
+                          console.log(props.action, action)
 
                         return (
                           <action.icon
@@ -1064,7 +1073,7 @@ const AuditForm = (props) => {
 
                 <Grid Container item xs={12} justifyContent='center' spacing={5}>
                   {/* <Collapse in={showExplanation} timeout={1500}>
-        <Fade in={showExplanation} timeout={500}> */}l
+        <Fade in={showExplanation} timeout={500}> */}
 
                   <Collapse in={true} timeout={1000} justifyContent='center'>
                     <Fade in={true} timeout={1000} justifyContent='center'>

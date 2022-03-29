@@ -13,7 +13,8 @@ import {
 } from "react-router-dom";
 
 import "./styles.css";
-import AuditForm from "./AuditForm";
+import AuditForm from "./AuditForm"; //it will look at index.js same as from "./AuditForm/index"  "./AuditForm/AuditForm"
+import BallotReconciliation from "./BallotReconciliation";
 import LoginPage from "./LoginPage";
 import ChangePassword from "./ChangePassword";
 import Cookies from 'js-cookie';
@@ -98,6 +99,11 @@ const App = () => {
             {<AuditForm userData = {userData}/>}
             {/* {userData.IsDefault ? <AuditForm userData = {userData}/> : <Redirect to = '/login'/> } */}
           </Route>
+          <Route exact path={"/Ballot-Reconciliation"}  >
+            {<BallotReconciliation userData = {userData}/>}
+            {/* {userData.IsDefault ? <AuditForm userData = {userData}/> : <Redirect to = '/login'/> } */}
+          </Route>
+
           <Route path= "/">
             <LoginPage onUserAuthenticated = {handleUserAuthenticated} onSelect = {handleOnselect} />
           </Route>

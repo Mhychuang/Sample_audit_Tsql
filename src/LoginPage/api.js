@@ -28,11 +28,29 @@ export const authenticateUser = async (email, password)=>{
 export const getAllCounty = async ()=>{
  
   let response = await axios.get(
-    `${env.apiUrl}sampleAudit/allCounty/`
+    `${env.apiUrl}auth/allCounty/`
   );
 
   return response
 
 }
 
+export const getCountyApps = async (countyId)=>{
+ 
+  let response = await axios.get(
+    `${env.apiUrl}auth/getAppList/${countyId}`
+  );
 
+  return response.data
+
+}
+
+
+export const getAppList = async ()=>{
+             
+  let response = await axios.get(
+    `${env.apiUrl}auth/getAppList/`
+  );
+
+  return response
+}

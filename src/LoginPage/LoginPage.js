@@ -22,10 +22,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 
 
-import { authenticateUser, getAllCounty } from './api';
+import { authenticateUser, getAllCounty, getAppList, getCountyApps } from './api';
 import axios from 'axios';
 
 function Copyright() {
@@ -80,7 +81,13 @@ export default function LoginPage(props) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
+  const [selectedCounty, setSelectedCounty] = useState();
+
+  const [selectedApp, setSelectedApp] = useState();
+
   const [counties, setCounties] = useState();
+
+  const [appLists, setAppLists] = useState();
 
   const history = useHistory();
 
@@ -110,8 +117,8 @@ export default function LoginPage(props) {
 
 
 
-// for drop down
-  const getAllCountyFromAPI = async () =>{
+  // for county drop down
+  const getAllCountyFromAPI = async () => {
     let response = await getAllCounty();
     console.log(response)
 
@@ -120,20 +127,84 @@ export default function LoginPage(props) {
   }
 
 
+  //for appLists drop down
+
+  const getAppListFromAPI = async () => {
+    let respsone = await getAppList();
+    console.log('appList', respsone)
+
+    //setAppLists(respsone.data)
+
+
+  }
+
   React.useEffect(() => {
     getAllCountyFromAPI()
-    console.log('conties data from hook',counties)
+    getAppListFromAPI()
+    console.log('conties data from hook', counties)
   }, []);
 
+  React.useEffect(() => {
+    console.log(counties);
+    console.log(appLists);
 
-  const handleChange = (e)=>{
+  }, [appLists])
+
+
+  const handleCountySelect = async (e) => {
+
+
+    setSelectedCounty(e.target.value)
+    let appList = await getCountyApps(e.target.value)
+    console.log(appList)
+    setAppLists(appList)
+  }
+
+  const handleAppSelect = (e) => {
+    setSelectedApp(e.target.value)
+  };
+
+  const handleChange = (e) => {
     //alert (e.target.value)
     //console.log(e.target)
     props.onSelect(e.target.value);
 
-    history.push('/audit-form')
+    //history.push('/audit-form')
 
   }
+
+
+  const goHandler = () => {
+    //selectedCounty 
+    console.log(selectedCounty);
+    console.log(selectedApp);
+
+    if (selectedCounty == undefined) {
+      alert("Please select a county");
+    }
+
+    if (selectedApp == undefined) {
+      alert("Please select an app");
+    }
+
+    if (selectedApp == 'Sample Audit'){
+      props.onSelect(selectedCounty);
+
+      history.push('/audit-form')
+    }
+
+    else if  (selectedApp == 'Ballot Reconciliation'){
+      props.onSelect(selectedCounty);
+
+      history.push('/Ballot-Reconciliation')
+    }
+
+
+
+
+  }
+
+
 
   const handleLogin = async () => {
     //get data through API and vrify login
@@ -159,7 +230,7 @@ export default function LoginPage(props) {
     else {
       //Successful login
 
-      
+
       if (userData.IsDefault === 'True') {
         props.onUserAuthenticated(
           //webUserId: userData.WebUserId
@@ -171,7 +242,7 @@ export default function LoginPage(props) {
         history.push('/change-password')
       } else {
         console.log(userData.CountyId)
-      
+
         props.onUserAuthenticated(
           //webUserId: userData.WebUserId
           userData
@@ -182,86 +253,81 @@ export default function LoginPage(props) {
 
 
 
-};
+  };
 
-return (
-  <Container component="main" maxWidth="xs">
-    <CssBaseline />
-    <div className={classes.paper}>
-      {/* <Avatar className={classes.avatar}>
+  return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        {/* <Avatar className={classes.avatar}>
         <LockOutlinedIcon />
       </Avatar> */}
-      <Typography component="h1" variant="h5">
-       Please select your county.
-      </Typography>
-      {/* <form className={classes.form}>
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="BOE login name"
-          name="email"
-          autoComplete="email"
-          autoFocus
-          onChange={handleEmail}
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-          onChange={handlePassword}
-        />
- 
-        <Button
-          type="button"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-          onClick={handleLogin}
+        <Typography component="h1" variant="h5">
+          Please select county then application.
+        </Typography>
 
-        >
-          Sign In
+        <FormControl className={classes.formControl}>
+
+
+          <InputLabel id="demo-simple-select-helper-label">County</InputLabel>
+          <Select
+            labelId="demo-simple-select-helper-label"
+            id="demo-simple-select-helper"
+            //value={age}
+            //onChange={handleChange}
+            onChange={handleCountySelect}
+
+          >
+            {counties && counties.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+
+
+          <FormHelperText>Please select your county</FormHelperText>
+
+
+
+
+        </FormControl>
+
+
+        <FormControl className={classes.formControl}>
+
+
+          <InputLabel id="demo-simple-select-helper-label">Application</InputLabel>
+          <Select
+            labelId="demo-simple-select-helper-label"
+            id="demo-simple-select-helper"
+            //value={age}
+            onChange={handleAppSelect}
+          >
+            {appLists && appLists.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+
+
+          <FormHelperText>Please select application.</FormHelperText>
+
+        </FormControl>
+
+        <Button variant="outlined" color="primary" onClick={goHandler} >
+          GO
+
         </Button>
-        <Grid container justifyContent="flex-end">
-          <Grid item type="button" onClick={handleOpen}>
-            <Link href="#" variant="body2">
-            Forgot password?
-            </Link>
-
-          </Grid>
-
-        </Grid>
-      </form>  */}
-
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-helper-label">County</InputLabel>
-        <Select
-          labelId="demo-simple-select-helper-label"
-          id="demo-simple-select-helper"
-          //value={age}
-          onChange={handleChange}
-        >
-               {counties && counties.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-        </Select>
-        <FormHelperText>Please select your county to begin</FormHelperText>
-      </FormControl>
 
 
-    </div>
-    <Modal
+
+
+
+
+      </div>
+      <Modal
         className={classes.modal}
         open={open}
         onClose={handleClose}
@@ -280,9 +346,9 @@ return (
           </div>
         </Fade>
       </Modal>
-    <Box mt={8}>
-      <Copyright />
-    </Box>
-  </Container>
-);
+      <Box mt={8}>
+        <Copyright />
+      </Box>
+    </Container>
+  );
 }
