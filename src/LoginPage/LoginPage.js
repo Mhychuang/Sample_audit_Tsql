@@ -142,11 +142,15 @@ export default function LoginPage(props) {
     getAllCountyFromAPI()
     getAppListFromAPI()
     console.log('conties data from hook', counties)
+    window.localStorage.removeItem('votingDate');
+    
+
   }, []);
 
   React.useEffect(() => {
     console.log(counties);
     console.log(appLists);
+    window.localStorage.removeItem('votingDate');
 
   }, [appLists])
 
@@ -263,7 +267,7 @@ export default function LoginPage(props) {
         <LockOutlinedIcon />
       </Avatar> */}
         <Typography component="h1" variant="h5">
-          Please select county then application.
+          Please select county and application.
         </Typography>
 
         <FormControl className={classes.formControl}>

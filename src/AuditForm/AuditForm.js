@@ -1035,7 +1035,7 @@ const AuditForm = (props) => {
                         
                         const action =
                           typeof props.action === "function" ? props.action() : props.action;
-                          console.log(props.action, action)
+                          //console.log(props.action, action)
 
                         return (
                           <action.icon

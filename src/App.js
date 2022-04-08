@@ -3,12 +3,13 @@ import { useState } from "react";
 //BrowserRouter as Router,
 //HashRouter as Router,
 import {
-  BrowserRouter as Router,
+  //BrowserRouter as Router,
   Switch,
   Route,
   Link,
   useHistory,
   Redirect,
+  HashRouter as Router,
 
 } from "react-router-dom";
 

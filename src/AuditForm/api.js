@@ -51,7 +51,11 @@ import axios from "axios";
 
     const CostOfCount = Number(data.CostOfCount)
     const TotalTime = Number(data.TotalTime)
+    console.log('VotingArray', data.VotingEquipmentUsed)
+
+    
     const VotingArray = data.VotingEquipmentUsed.split(',');
+
                              
     let newSampleDetail ={
         CountyId: countyId,

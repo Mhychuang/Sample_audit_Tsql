@@ -72,6 +72,9 @@ const BallotReconciliation = (props) => {
     }
 
 
+    const [countyId, setCountyId] = React.useState();
+
+    const [votingDate, setVotingDate] = React.useState();
 
     const [bRDetail, setBRDetail] = React.useState();
 
@@ -96,34 +99,27 @@ const BallotReconciliation = (props) => {
     const title = <h1>Ballot Reconciliation Reporting</h1>;
     // functions
 
-    const handleDateSelect = (e) => {
 
+    const getDataByVotingDate = (selectedDate) => {
+        console.log('in function', selectedDate)
         let countyName = countyVotingData.CountyName
-        let voetingDate = e.target.value
+
+        console.log('in function', countyName)
 
 
+        if (countyName && selectedDate) {
+            getVotingMethodAPI(countyName, selectedDate).then((results) => {
+                results.VotingDateSelected = selectedDate
 
-
-        console.log(countyName)
-        console.log(voetingDate)
-
-        if (countyName && voetingDate) {
-            getVotingMethodAPI(countyName, voetingDate).then((results) => {
-                results.VotingDateSelected = e.target.value
-                console.log('votingMethod results', results)
                 setVotingMethod(results)
-
-
 
             }).catch((error) => {
                 console.log(error);
             })
 
-            getBallotReconcileDetailAPI(countyName, voetingDate).then((results) => {
-                console.log('votingMethod results', results)
+            getBallotReconcileDetailAPI(countyName, selectedDate).then((results) => {
+
                 setRows(results)
-
-
 
             }).catch((error) => {
                 console.log(error);
@@ -136,9 +132,19 @@ const BallotReconciliation = (props) => {
         }
 
 
+    }
 
+    const handleDateSelect = (e) => {
+
+        setVotingDate(e.target.value)
+
+        window.localStorage.setItem('votingDate', e.target.value);
+
+        getDataByVotingDate(e.target.value)
 
     }
+
+
 
 
 
@@ -258,13 +264,15 @@ const BallotReconciliation = (props) => {
         //console.log(props.userData.CountyId)
 
         let response = await getVotingDateAPI(countyId)
-        console.log('getVotingDate Results', response)
+
+        window.localStorage.setItem('countyVotingData', response);
+
         setCountyVotingData({
             ...countyVotingData,
             ...response
         })
 
-        console.log('Response', response.CountyName)
+
 
     }
 
@@ -281,7 +289,7 @@ const BallotReconciliation = (props) => {
         updateData[objIndex].Spoiled = putbody.Spoiled
         updateData[objIndex].Provisional = parseInt(putbody.Provisional)
         updateData[objIndex].Challenged = parseInt(putbody.Challenged)
-        updateData[objIndex].Unused = parseInt(putbody.Challenged)
+        updateData[objIndex].Unused = parseInt(putbody.Unused)
         updateData[objIndex].BallotsCast = parseInt(putbody.BallotsCast)
         updateData[objIndex].Comments = putbody.Comments
 
@@ -291,40 +299,60 @@ const BallotReconciliation = (props) => {
 
     React.useEffect(() => {
 
+        
 
-        //getDetailByCountyId(props.userData.CountyId)
+        if (props.userData.CountyId){
+            setCountyId(props.userData.CountyId);
+            window.localStorage.setItem('Ballot_countyId', props.userData.CountyId);
+            getVotingDate(props.userData.CountyId)
+            
 
-        getVotingDate(props.userData.CountyId)
+        }else{
+            //setCountyId(Number(window.localStorage.getItem('Ballot_countyId')))
+
+            getVotingDate(Number(window.localStorage.getItem('Ballot_countyId')))
+
+        }
+
+        let previousVotingData = (window.localStorage.getItem('countyVotingData'))
+        console.log(previousVotingData)
+         
+        setCountyVotingData({
+            ...countyVotingData,
+            ...previousVotingData
+        })
+
+        let cashedDate = (window.localStorage.getItem('votingDate'))
+        console.log(cashedDate)
+
+        if (cashedDate) {
+            setVotingDate(cashedDate)
+        }
 
 
     }, []);
 
 
+    React.useEffect(() => {
+
+      
+
+        
+    
+
+
+
+    }, [countyId]);
 
 
 
 
     React.useEffect(() => {
 
-
-        console.log(countyVotingData)
-
+        getDataByVotingDate(votingDate)
 
 
-        console.log(countyVotingData['CountyName'])
-        console.log(countyVotingData['votingList'])
-
-
-    }, [countyVotingData]);
-
-
-    React.useEffect(() => {
-
-
-        console.log('rows data', rows)
-
-
-    }, [rows]);
+    }, [votingDate, countyVotingData])
 
 
     const tableIcons = {
@@ -509,6 +537,9 @@ const BallotReconciliation = (props) => {
                                 labelId="demo-simple-select-helper-label"
                                 id="demo-simple-select-helper"
                                 onChange={handleDateSelect}
+                                value={votingDate? votingDate: ''}
+                                
+//                                value= '05/13/2022'
 
                             >
                                 {countyVotingData.votingList && countyVotingData.votingList.map((option) => (
@@ -564,14 +595,14 @@ const BallotReconciliation = (props) => {
 
 
 
-                        title="Ballot Reconcile Form"
+                        title="Ballot Reconciliation Form"
                         //icons={{ Export: () => 'Export' }}
                         //icons={tableIcons}
 
                         icons={{
-                            Export: () =>       <Button variant="contained" color="secondary">
-                            Export
-                          </Button>,
+                            Export: () => <Button variant="contained" color="secondary">
+                                Export
+                            </Button>,
 
                         }}
 
@@ -589,9 +620,10 @@ const BallotReconciliation = (props) => {
                                 fontSize: 14,
                             },
                             exportButton: true,
-                            exportFileName: countyVotingData.CountyName + "_" + votingMethod.VotingMethod + "_" + votingMethod.VotingDateSelected
+                            exportFileName: countyVotingData.CountyName + "_" + votingMethod.VotingMethod + "_" + votingMethod.VotingDateSelected,
                             // toolbarButtonAlignment: 'left',   `test-${new Date().toISOString()}`
-
+                            //headerStyle: { position: 'sticky', top: 0 }
+                            maxBodyHeight: '600px',
 
 
 
@@ -614,25 +646,37 @@ const BallotReconciliation = (props) => {
                                     let ReconcileID = oldData.BallotReconcileId
                                     //(Original Count – Spoiled – Provisional – Unused – Challenged)
 
-                                    let BallotsCast = parseInt(newData.OriginalCount) - parseInt(newData.Spoiled) -
-                                        parseInt(newData.Provisional) - parseInt(newData.Unused) - parseInt(newData.Challenged)
+                                    console.log(newData)
+
+                                    let OriginalCountM = parseInt(newData.OriginalCount)? parseInt(newData.OriginalCount): 0
+                                    let SpoiledM = parseInt(newData.Spoiled)? parseInt(newData.Spoiled):0
+                                    let ProvisionalM = parseInt(newData.Provisional)? parseInt(newData.Provisional):0
+                                    let ChallengedM = parseInt(newData.Challenged)? parseInt(newData.Challenged):0
+
+                                    let UnusedM = parseInt(newData.Unused)? parseInt(newData.Unused): 0
+
+
+                                    let BallotsCast = OriginalCountM - SpoiledM -
+                                    ProvisionalM - UnusedM - ChallengedM
 
 
                                     let putbody = {
 
                                         "BallotReconcileId": newData.BallotReconcileId,
-                                        "OriginalCount": parseInt(newData.OriginalCount),
-                                        "Spoiled": parseInt(newData.Spoiled),
-                                        "Provisional": parseInt(newData.Provisional),
-                                        "Challenged": parseInt(newData.Challenged),
-                                        "Unused": parseInt(newData.Unused),
+                                        "OriginalCount": OriginalCountM,
+                                        "Spoiled": SpoiledM,
+                                        "Provisional": ProvisionalM,
+                                        "Challenged": ChallengedM,
+                                        "Unused": UnusedM,
                                         "BallotsCast": parseInt(BallotsCast),
                                         "Comments": newData.Comments
 
                                     }
 
 
-                                    console.log(newData)
+                                    
+                                    console.log('putbody',putbody)
+                                    
 
                                     updateBallotReconcile(putbody).then(response => {
                                         console.log(response)

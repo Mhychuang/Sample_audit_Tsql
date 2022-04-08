@@ -37,10 +37,9 @@ export const getDetailByCountyIdAPI = async (countyId) => {
         countyName:countyName,
         votingDate:votingDate
       }
-      console.log('params from getVotingMethodAPI',params)
       const response = await axios.get(`${env.apiUrl}ballotReconcile/getVotingMethod`, {params});
 
-      console.log('response from getVotingMethodAPI',response.data)
+      
       return response.data
       
     } catch (error) {
@@ -59,10 +58,9 @@ export const getDetailByCountyIdAPI = async (countyId) => {
         countyName:countyName,
         votingDate:votingDate
       }
-      console.log('params from getBallotReconcileDetailAPI',params)
+
       const response = await axios.get(`${env.apiUrl}ballotReconcile/getballotReconcileDetail`, {params});
 
-      console.log('response from getBallotReconcileDetailAPI',response)
       return response.data
       
     } catch (error) {
